@@ -57,7 +57,7 @@ module Castle
 
         build_body_with_js(env, body, head_open_end)
       rescue => e
-        Rails.logger.error "[Rollbar] castle.js could not be added because #{e} exception"
+        Rails.logger.error "[Castle] castle.js could not be added because #{e} exception"
         nil
       end
 
