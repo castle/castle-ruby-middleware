@@ -22,7 +22,7 @@ module Castle
 
           build_response(env, app_result, response_string)
         rescue => e
-          Rails.logger.debug "[Castle] castle.js could not be added because #{e} exception"
+          Middleware.configuration.logger.debug "[Castle] castle.js could not be added because #{e} exception"
           app_result
         end
       end
@@ -57,7 +57,7 @@ module Castle
 
         build_body_with_js(env, body, head_open_end)
       rescue => e
-        Rails.logger.error "[Rollbar] castle.js could not be added because #{e} exception"
+        Rails.logger.error "[Castle] castle.js could not be added because #{e} exception"
         nil
       end
 
@@ -95,7 +95,7 @@ module Castle
       end
 
       def app_id_js_tag(env)
-        script_tag("_castle('setAppId', '#{Castle::Middleware.app_id}');", env)
+        script_tag("_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');", env)
       end
 
       def identify_js_tag(env)

@@ -32,12 +32,23 @@ module Castle
             event_name += ' > ' + URI(app_result[1]["Location"]).path
           end
 
-          castle = Castle::Client.new(req, {})
-          castle.track(
+          # Extract headers from request into a string
+          headers = ::Castle::Extractors::Headers.new(req).call
+
+          # Read client ID from cookies
+          client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
+
+          # Send request as configured
+          Middleware.configuration.transport.({
             user_id: env['castle'].user_id,
             traits: env['castle'].traits,
             name: event_name,
-            properties: req.params)
+            properties: req.params
+          }, {
+            headers: headers,
+            client_id: client_id,
+            ip: req.ip
+          })
         end
 
         app_result

@@ -11,11 +11,29 @@ gem 'castle-middleware'
 And set your Castle credentials in an initializer:
 
 ```ruby
-Castle::Middleware.app_id = '186593875646714'
-Castle::Middleware.api_secret = 'O2ygKmdFTWSqhAF1SL1UyttyEiHCz9F'
+Castle::Middleware.configure do |config|
+  config.app_id = '186593875646714'
+  config.pub_key = 'pk_123456789abcdf'
+end
 ```
 
 The middleware will insert itself into the Rack middleware stack.
+
+### Manually insert middleware
+
+```ruby
+# In castle initializer
+
+config.auto_insert_middleware = false
+```
+
+```ruby
+# Example
+app.config.middleware.insert_after ActionDispatch::Flash,
+                                   Castle::Middleware::Tracking
+app.config.middleware.insert_after ActionDispatch::Flash,
+                                   Castle::Middleware::Sensor
+```
 
 ## Usage
 
