@@ -13,7 +13,7 @@ And set your Castle credentials in an initializer:
 ```ruby
 Castle::Middleware.configure do |config|
   config.app_id = '186593875646714'
-  config.pub_key = 'pk_123456789abcdf'
+  config.api_secret = 'abcdefg123456789'
 end
 ```
 
