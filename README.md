@@ -19,12 +19,12 @@ end
 
 The middleware will insert itself into the Rack middleware stack.
 
-### Manually activate middleware
+### Manually insert middleware
 
 ```ruby
 # In castle initializer
 
-config.auto_inject = false
+config.auto_insert_middleware = false
 ```
 
 ```ruby

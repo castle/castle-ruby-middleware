@@ -9,7 +9,7 @@ module Castle
       %i[
         api_secret
         app_id
-        auto_inject
+        auto_insert_middleware
         logger
         transport
         pub_key
@@ -25,7 +25,7 @@ module Castle
       def reset!
         @api_secret = nil
         @app_id = nil
-        @auto_inject = true
+        @auto_insert_middleware = true
         @logger = defined?(::Rails) ? Rails.logger : nil
         @transport = Transport::Sync
         @pub_key = nil
