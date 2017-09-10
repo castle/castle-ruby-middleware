@@ -22,7 +22,7 @@ module Castle
 
           build_response(env, app_result, response_string)
         rescue => e
-          Rails.logger.debug "[Castle] castle.js could not be added because #{e} exception"
+          Middleware.configuration.logger.debug "[Castle] castle.js could not be added because #{e} exception"
           app_result
         end
       end

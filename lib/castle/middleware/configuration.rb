@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'castle/middleware/transport/sync'
+
 module Castle
   module Middleware
     # Configuration object for Middleware
@@ -8,7 +10,8 @@ module Castle
         api_secret
         app_id
         auto_inject
-        before_send
+        logger
+        transport
         pub_key
       ].each do |opt|
         attr_accessor opt
@@ -23,7 +26,8 @@ module Castle
         @api_secret = nil
         @app_id = nil
         @auto_inject = true
-        @before_send = nil
+        @logger = defined?(::Rails) ? Rails.logger : nil
+        @transport = Transport::Sync
         @pub_key = nil
       end
     end
