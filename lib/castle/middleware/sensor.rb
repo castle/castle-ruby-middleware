@@ -95,7 +95,7 @@ module Castle
       end
 
       def app_id_js_tag(env)
-        script_tag("_castle('setAppId', '#{Castle::Middleware.app_id}');", env)
+        script_tag("_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');", env)
       end
 
       def identify_js_tag(env)
