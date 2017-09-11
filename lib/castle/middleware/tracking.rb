@@ -28,8 +28,8 @@ module Castle
         if req.post? || req.put? || req.delete?
           event_name = "[#{app_result[0]}] #{req.request_method} #{req.path}"
 
-          if app_result[1]["Location"]
-            event_name += ' > ' + URI(app_result[1]["Location"]).path
+          if app_result[1]['Location']
+            event_name += ' > ' + URI(app_result[1]['Location']).path
           end
 
           # Extract headers from request into a string
