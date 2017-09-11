@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Castle::Middleware::Configuration do
-
   describe '#reset!' do
     subject(:instance) { described_class.new }
 
