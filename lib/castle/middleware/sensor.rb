@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Castle
   module Middleware
     class Sensor
@@ -103,7 +101,13 @@ module Castle
       def identify_js_tag(env)
         # FIXME: we shouldn't use internals from the other middleware
         return '' unless env['castle'].user_id
-        script_tag("_castle('identify', '#{env['castle'].user_id}');", env)
+
+        script_content = <<~SCRIPT
+          \n_castle('identify', '#{env['castle'].user_id}');
+          _castle('secure', '#{OpenSSL::HMAC.hexdigest('sha256', Castle::Middleware.configuration.api_secret, env['castle'].user_id.to_s)}');
+        SCRIPT
+
+        script_tag(script_content, env)
       end
 
       def add_person_data(js_config, env)
