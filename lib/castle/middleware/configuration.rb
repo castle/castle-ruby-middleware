@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'castle-rb'
 require 'castle/middleware/transport/sync'
 
 module Castle
@@ -29,6 +30,11 @@ module Castle
         @logger = defined?(::Rails) ? Rails.logger : nil
         @transport = Transport::Sync
         @pub_key = nil
+      end
+
+      # Forward setting to Castle SDK
+      def api_secret=(api_secret)
+        @api_secret = Castle.api_secret = api_secret
       end
     end
   end

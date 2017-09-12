@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'castle-rb'
 require 'castle/middleware/configuration'
 require 'castle/middleware/sensor'
 require 'castle/middleware/tracking'
