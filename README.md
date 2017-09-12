@@ -19,22 +19,6 @@ end
 
 The middleware will insert itself into the Rack middleware stack.
 
-### Manually insert middleware
-
-```ruby
-# In castle initializer
-
-config.auto_insert_middleware = false
-```
-
-```ruby
-# Example
-app.config.middleware.insert_after ActionDispatch::Flash,
-                                   Castle::Middleware::Tracking
-app.config.middleware.insert_after ActionDispatch::Flash,
-                                   Castle::Middleware::Sensor
-```
-
 ## Usage
 
 The middleware will insert Castle.js into the HEAD tag on all your pages, as well as log track any POST, PUT and DELETE requests as Castle events.
@@ -57,6 +41,24 @@ class ApplicationController < ActionController::Base
 
   # ...
 end
+```
+
+### Configuration
+
+### Manually inserting middleware in Rails
+
+```ruby
+Castle::Middleware.configure do |config|
+  config.auto_insert_middleware = false
+end
+```
+
+```ruby
+# config/application.rb
+app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if needed
+                                   Castle::Middleware::Tracking
+app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if needed
+                                   Castle::Middleware::Sensor
 ```
 
 ## License
