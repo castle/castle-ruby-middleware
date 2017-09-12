@@ -6,10 +6,15 @@ module Castle
     class RequestConfig
       attr_reader :user_id
       attr_reader :traits
+      attr_reader :props
 
       def identify(user_id, traits)
         @user_id = user_id
         @traits = traits
+      end
+
+      def properties(props)
+        @props = props
       end
     end
 
@@ -42,7 +47,7 @@ module Castle
               user_id: env['castle'].user_id,
               traits: env['castle'].traits,
               name: event_name,
-              properties: req.params
+              properties: env['castle'].props
             },
             {
               headers: headers,
