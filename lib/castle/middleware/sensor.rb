@@ -24,9 +24,13 @@ module Castle
 
           build_response(env, app_result, response_string)
         rescue => e
-          Middleware.configuration.logger.debug "[Castle] castle.js could not be added because #{e} exception"
+          log(:debug, "[Castle] castle.js could not be added because #{e} exception")
           app_result
         end
+      end
+
+      def log(level, message)
+        Middleware.log(level, message)
       end
 
       def add_js?(env, status, headers)
@@ -59,7 +63,7 @@ module Castle
 
         build_body_with_js(env, body, head_open_end)
       rescue => e
-        Rails.logger.error "[Castle] castle.js could not be added because #{e} exception"
+        log(:error, "[Castle] castle.js could not be added because #{e} exception")
         nil
       end
 
@@ -76,8 +80,11 @@ module Castle
       def build_body_with_js(env, body, head_open_end)
         return body unless head_open_end
 
-        body[0..head_open_end] << snippet_js_tag(env) << app_id_js_tag(env) <<
-          identify_js_tag(env) << body[head_open_end + 1..-1]
+        [
+          body[0..head_open_end],
+          complete_js_content(env),
+          body[head_open_end + 1..-1]
+        ].join
       end
 
       def find_end_of_head_open(body)
@@ -86,24 +93,42 @@ module Castle
       end
 
       def join_body(response)
-        response.to_enum.reduce('') do |acc, fragment|
-          acc << fragment.to_s
-          acc
-        end
+        response.to_a.map(&:to_s).join
       end
 
       def close_old_response(response)
         response.close if response.respond_to?(:close)
       end
 
-      def app_id_js_tag(env)
-        script_tag("_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');", env)
+      def complete_js_content(env)
+        commands = [
+          "\n",
+          app_id_command(env),
+          identify_command(env),
+          secure_command(env),
+          "\n"
+        ].compact.join
+
+        snippet_js_tag(env) + script_tag(commands, env)
       end
 
-      def identify_js_tag(env)
-        # FIXME: we shouldn't use internals from the other middleware
-        return '' unless env['castle'].user_id
-        script_tag("_castle('identify', '#{env['castle'].user_id}');", env)
+      def app_id_command(_)
+        "_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');"
+      end
+
+      def identify_command(env)
+        return unless env['castle'].user_id
+        "_castle('identify', '#{env['castle'].user_id}');"
+      end
+
+      def secure_command(env)
+        return unless env['castle'].user_id
+        hmac = OpenSSL::HMAC.hexdigest(
+          'sha256',
+          Castle::Middleware.configuration.api_secret,
+          env['castle'].user_id.to_s
+        )
+        "_castle('secure', '#{hmac}');"
       end
 
       def add_person_data(js_config, env)
