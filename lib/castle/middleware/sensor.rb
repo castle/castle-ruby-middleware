@@ -31,8 +31,7 @@ module Castle
       end
 
       def log(level, message)
-        return unless Middleware.configuration.logger
-        Middleware.configuration.logger.send(level.to_s, message)
+        Middleware.log(level, message)
       end
 
       def add_js?(env, status, headers)
