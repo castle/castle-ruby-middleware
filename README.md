@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-### Configuration
+## Configuration
 
 ### Manually inserting middleware in Rails
 
@@ -60,6 +60,34 @@ app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if need
 app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if needed
                                    Castle::Middleware::Sensor
 ```
+
+
+### Async tracking
+
+By default Castle sends tracking requests synchronously. To eg. use Sidekiq
+to send requests in a background worker you can override the transport method
+
+```ruby
+# castle_worker.rb
+
+class CastleWorker
+  include Sidekiq::Worker
+
+  def perform(params, context)
+    ::Castle::Middleware.track(params, context)
+  end
+end
+
+# initializers/castle.rb
+
+Castle::Middleware.configure do |config|
+  config.transport = lambda do |params, context|
+    CastleWorker.perform_async(params, context)
+  end
+end
+
+```
+
 
 ## License
 
