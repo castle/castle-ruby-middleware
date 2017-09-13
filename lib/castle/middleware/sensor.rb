@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Castle
   module Middleware
     class Sensor
@@ -10,6 +12,7 @@ module Castle
       def initialize(app)
         @app = app
         @config = config
+        @script_commands = {}
       end
 
       def call(env)
@@ -74,8 +77,11 @@ module Castle
       def build_body_with_js(env, body, head_open_end)
         return body unless head_open_end
 
-        body[0..head_open_end] << snippet_js_tag(env) << app_id_js_tag(env) <<
-          identify_js_tag(env) << body[head_open_end + 1..-1]
+        [
+          body[0..head_open_end],
+          complete_js_content(env),
+          body[head_open_end + 1..-1]
+        ].join
       end
 
       def find_end_of_head_open(body)
@@ -84,30 +90,40 @@ module Castle
       end
 
       def join_body(response)
-        response.to_enum.reduce('') do |acc, fragment|
-          acc << fragment.to_s
-          acc
-        end
+        response.to_a.map(&:to_s).join
       end
 
       def close_old_response(response)
         response.close if response.respond_to?(:close)
       end
 
-      def app_id_js_tag(env)
-        script_tag("_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');", env)
+      def complete_js_content(env)
+        app_id!(env)
+        identify!(env)
+        secure!(env)
+
+        commands = ["\n", @script_commands.values.join, "\n"].join
+
+        snippet_js_tag(env) + script_tag(commands, env)
       end
 
-      def identify_js_tag(env)
-        # FIXME: we shouldn't use internals from the other middleware
-        return '' unless env['castle'].user_id
+      def app_id!(_)
+        @script_commands[:app_id] =
+          "_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');"
+      end
 
-        script_content = <<~SCRIPT
-          \n_castle('identify', '#{env['castle'].user_id}');
-          _castle('secure', '#{OpenSSL::HMAC.hexdigest('sha256', Castle::Middleware.configuration.api_secret, env['castle'].user_id.to_s)}');
-        SCRIPT
+      def identify!(env)
+        return unless env['castle'].user_id
+        @script_commands[:identify] = "_castle('identify', '#{env['castle'].user_id}');"
+      end
 
-        script_tag(script_content, env)
+      def secure!(env)
+        hmac = OpenSSL::HMAC.hexdigest(
+          'sha256',
+          Castle::Middleware.configuration.api_secret,
+          env['castle'].user_id.to_s
+        )
+        @script_commands[:secure] = "_castle('secure', '#{hmac}');"
       end
 
       def add_person_data(js_config, env)
