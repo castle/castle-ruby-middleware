@@ -12,7 +12,6 @@ module Castle
       def initialize(app)
         @app = app
         @config = config
-        @script_commands = {}
       end
 
       def call(env)
@@ -102,33 +101,34 @@ module Castle
       end
 
       def complete_js_content(env)
-        app_id!(env)
-        identify!(env)
-        secure!(env)
-
-        commands = ["\n", @script_commands.values.join, "\n"].join
+        commands = [
+          "\n",
+          app_id_command(env),
+          identify_command(env),
+          secure_command(env),
+          "\n"
+        ].compact.join
 
         snippet_js_tag(env) + script_tag(commands, env)
       end
 
-      def app_id!(_)
-        @script_commands[:app_id] =
-          "_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');"
+      def app_id_command(_)
+        "_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');"
       end
 
-      def identify!(env)
+      def identify_command(env)
         return unless env['castle'].user_id
-        @script_commands[:identify] = "_castle('identify', '#{env['castle'].user_id}');"
+        "_castle('identify', '#{env['castle'].user_id}');"
       end
 
-      def secure!(env)
+      def secure_command(env)
         return unless env['castle'].user_id
         hmac = OpenSSL::HMAC.hexdigest(
           'sha256',
           Castle::Middleware.configuration.api_secret,
           env['castle'].user_id.to_s
         )
-        @script_commands[:secure] = "_castle('secure', '#{hmac}');"
+        "_castle('secure', '#{hmac}');"
       end
 
       def add_person_data(js_config, env)
