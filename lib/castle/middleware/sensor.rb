@@ -25,9 +25,14 @@ module Castle
 
           build_response(env, app_result, response_string)
         rescue => e
-          Middleware.configuration.logger.debug "[Castle] castle.js could not be added because #{e} exception"
+          log(:debug, "[Castle] castle.js could not be added because #{e} exception")
           app_result
         end
+      end
+
+      def log(level, message)
+        return unless Middleware.configuration.logger
+        Middleware.configuration.logger.send(level.to_s, message)
       end
 
       def add_js?(env, status, headers)
@@ -60,7 +65,7 @@ module Castle
 
         build_body_with_js(env, body, head_open_end)
       rescue => e
-        Rails.logger.error "[Castle] castle.js could not be added because #{e} exception"
+        log(:error, "[Castle] castle.js could not be added because #{e} exception")
         nil
       end
 
