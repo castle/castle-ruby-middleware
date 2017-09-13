@@ -118,6 +118,7 @@ module Castle
       end
 
       def secure!(env)
+        return unless env['castle'].user_id
         hmac = OpenSSL::HMAC.hexdigest(
           'sha256',
           Castle::Middleware.configuration.api_secret,
