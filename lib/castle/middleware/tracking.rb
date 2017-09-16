@@ -1,20 +1,6 @@
 
 # frozen_string_literal: true
 
-def dot(object, prefix = nil)
-  if object.is_a? Hash
-    object.map do |key, value|
-      if prefix
-        dot_it value, "#{prefix}.#{key}"
-      else
-        dot_it value, "#{key}"
-      end
-    end.reduce(&:merge)
-  else
-    {prefix => object}
-  end
-end
-
 module Castle
   module Middleware
     class RequestConfig
@@ -44,51 +30,48 @@ module Castle
 
         req = Rack::Request.new(env)
 
+        # [status, headers, body]
         app_result = app.call(env)
 
         # Find a matching event from the config
-        event = Middleware.configuration.events.select do |event, conditions|
-          app_result[0].to_s[conditions[:status]] &&
-          req.request_method[conditions[:method]] &&
-          req.path[conditions[:path]]
+        mapping = Middleware.event_mapping.find_by_rack_request(app_result, req)
+
+        return app_result if mapping.nil?
+
+        # event_name = build_event_name(req, app_result)
+        event_name = mapping.event
+        properties = mapping.properties
+
+        flat_params = Middleware::ParamsFlatter.(req.params)
+
+        event_properties = properties.each_with_object({}) do |(property, param), hash|
+          hash[property] = flat_params[param]
         end
 
-        unless event.empty?
-          # event_name = build_event_name(req, app_result)
-          event_name = event.keys.first.to_s
-          properties = event.values.first[:properties] || {}
+        # Convert password to a boolean
+        # TODO: Check agains list of known password field names
+        event_properties[:password] = !event_properties[:password].to_s.empty?
 
-          flat_params = dot_it(req.params)
+        # Extract headers from request into a string
+        headers = ::Castle::Extractors::Headers.new(req).call
 
-          event_properties = {}
-          properties.each do |property, param|
-            event_properties[property] = flat_params[param]
-          end
+        # Read client ID from cookies
+        client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
 
-          # Convert password to a boolean
-          event_properties[:password] = !event_properties[:password].to_s.empty?
-
-          # Extract headers from request into a string
-          headers = ::Castle::Extractors::Headers.new(req).call
-
-          # Read client ID from cookies
-          client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
-
-          # Send request as configured
-          Middleware.configuration.transport.(
-            {
-              user_id: env['castle'].user_id,
-              traits: env['castle'].traits,
-              name: event_name,
-              properties: (env['castle'].props || {}).merge(event_properties)
-            },
-            {
-              headers: headers,
-              client_id: client_id,
-              ip: req.ip
-            }
-          )
-        end
+        # Send request as configured
+        Middleware.configuration.transport.(
+          {
+            user_id: env['castle'].user_id,
+            traits: env['castle'].traits,
+            name: event_name,
+            properties: (env['castle'].props || {}).merge(event_properties)
+          },
+          {
+            headers: headers,
+            client_id: client_id,
+            ip: req.ip
+          }
+        )
 
         app_result
       end
