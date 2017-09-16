@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'castle/middleware/configuration'
+require 'castle/middleware/event_mapper'
+require 'castle/middleware/params_flattener'
 require 'castle/middleware/sensor'
 require 'castle/middleware/tracking'
 require 'castle/middleware/version'
@@ -14,10 +16,15 @@ module Castle
       def configure
         raise ArgumentError unless block_given?
         yield(configuration)
+        @event_mapping = nil
       end
 
       def configuration
         @configuration ||= Configuration.new
+      end
+
+      def event_mapping
+        @event_mapping ||= EventMapper.build(configuration.events)
       end
 
       def log(level, message)

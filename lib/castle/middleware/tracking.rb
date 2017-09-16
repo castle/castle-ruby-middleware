@@ -30,32 +30,48 @@ module Castle
 
         req = Rack::Request.new(env)
 
+        # [status, headers, body]
         app_result = app.call(env)
 
-        if req.post? || req.put? || req.delete?
-          event_name = build_event_name(req, app_result)
+        # Find a matching event from the config
+        mapping = Middleware.event_mapping.find_by_rack_request(app_result, req)
 
-          # Extract headers from request into a string
-          headers = ::Castle::Extractors::Headers.new(req).call
+        return app_result if mapping.nil?
 
-          # Read client ID from cookies
-          client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
+        # event_name = build_event_name(req, app_result)
+        event_name = mapping.event
+        properties = mapping.properties
 
-          # Send request as configured
-          Middleware.configuration.transport.(
-            {
-              user_id: env['castle'].user_id,
-              traits: env['castle'].traits,
-              name: event_name,
-              properties: env['castle'].props
-            },
-            {
-              headers: headers,
-              client_id: client_id,
-              ip: req.ip
-            }
-          )
+        flat_params = Middleware::ParamsFlattener.(req.params)
+
+        event_properties = properties.each_with_object({}) do |(property, param), hash|
+          hash[property] = flat_params[param]
         end
+
+        # Convert password to a boolean
+        # TODO: Check agains list of known password field names
+        event_properties[:password] = !event_properties[:password].to_s.empty?
+
+        # Extract headers from request into a string
+        headers = ::Castle::Extractors::Headers.new(req).call
+
+        # Read client ID from cookies
+        client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
+
+        # Send request as configured
+        Middleware.configuration.transport.(
+          {
+            user_id: env['castle'].user_id,
+            traits: env['castle'].traits,
+            name: event_name,
+            properties: (env['castle'].props || {}).merge(event_properties)
+          },
+          {
+            headers: headers,
+            client_id: client_id,
+            ip: req.ip
+          }
+        )
 
         app_result
       end
