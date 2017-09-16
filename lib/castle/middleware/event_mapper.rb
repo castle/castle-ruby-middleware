@@ -6,7 +6,7 @@ module Castle
     class EventMapper
       Object = Struct.new(:event, :method, :path, :status, :properties)
 
-      attr_accessor :mapping
+      attr_accessor :mappings
 
       def initialize
         @mappings = []

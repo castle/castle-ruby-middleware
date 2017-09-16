@@ -13,6 +13,7 @@ module Castle
         app_id
         auto_insert_middleware
         events
+        file_path
         logger
         transport
         pub_key
@@ -26,7 +27,7 @@ module Castle
       end
 
       def load_config_file!
-        file_config = YAML.load_file('castle.yml')
+        file_config = YAML.load_file(file_path)
         self.events = file_config['events'] || {}
       rescue Errno::ENOENT
         logger.send('warn', '[Castle] No config file found')
@@ -40,6 +41,7 @@ module Castle
         @app_id = nil
         @auto_insert_middleware = true
         @events = {}
+        @file_path = 'config/castle.yml'
         @logger = defined?(::Rails) ? Rails.logger : nil
         @transport = Transport::Sync
         @pub_key = nil
