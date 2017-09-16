@@ -1,6 +1,20 @@
 
 # frozen_string_literal: true
 
+def dot(object, prefix = nil)
+  if object.is_a? Hash
+    object.map do |key, value|
+      if prefix
+        dot_it value, "#{prefix}.#{key}"
+      else
+        dot_it value, "#{key}"
+      end
+    end.reduce(&:merge)
+  else
+    {prefix => object}
+  end
+end
+
 module Castle
   module Middleware
     class RequestConfig
@@ -32,8 +46,27 @@ module Castle
 
         app_result = app.call(env)
 
-        if req.post? || req.put? || req.delete?
-          event_name = build_event_name(req, app_result)
+        # Find a matching event from the config
+        event = Middleware.configuration.events.select do |event, conditions|
+          app_result[0].to_s[conditions[:status]] &&
+          req.request_method[conditions[:method]] &&
+          req.path[conditions[:path]]
+        end
+
+        unless event.empty?
+          # event_name = build_event_name(req, app_result)
+          event_name = event.keys.first.to_s
+          properties = event.values.first[:properties] || {}
+
+          flat_params = dot_it(req.params)
+
+          event_properties = {}
+          properties.each do |property, param|
+            event_properties[property] = flat_params[param]
+          end
+
+          # Convert password to a boolean
+          event_properties[:password] = !event_properties[:password].to_s.empty?
 
           # Extract headers from request into a string
           headers = ::Castle::Extractors::Headers.new(req).call
@@ -47,7 +80,7 @@ module Castle
               user_id: env['castle'].user_id,
               traits: env['castle'].traits,
               name: event_name,
-              properties: env['castle'].props
+              properties: (env['castle'].props || {}).merge(event_properties)
             },
             {
               headers: headers,

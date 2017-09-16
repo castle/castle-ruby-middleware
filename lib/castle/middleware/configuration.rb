@@ -11,6 +11,7 @@ module Castle
         api_secret
         app_id
         auto_insert_middleware
+        events
         logger
         transport
         pub_key
@@ -27,6 +28,7 @@ module Castle
         @api_secret = nil
         @app_id = nil
         @auto_insert_middleware = true
+        @events = {}
         @logger = defined?(::Rails) ? Rails.logger : nil
         @transport = Transport::Sync
         @pub_key = nil
