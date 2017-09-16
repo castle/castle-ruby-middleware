@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'pp'
 
 describe Castle::Middleware::Configuration do
   subject(:instance) { described_class.new }
@@ -31,7 +30,7 @@ describe Castle::Middleware::Configuration do
     context 'when non-existing config is loaded' do
       let(:path) { './non-existing.yml' }
 
-      it { is_expected.to be_eql 0}
+      it { is_expected.to be_eql 0 }
     end
   end
 end
