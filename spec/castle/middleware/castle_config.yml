@@ -1,6 +1,6 @@
 ---
 events:
   $login.failed:
-    path: /sign_in
+    path: !ruby/regexp '/\/sign_in\/new/i'
     status: 404
     method: POST
