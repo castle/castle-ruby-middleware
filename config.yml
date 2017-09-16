@@ -1,5 +1,0 @@
-events:
-  $login.succeeded:
-    status: 302
-    method: POST
-    path: /sign_in
