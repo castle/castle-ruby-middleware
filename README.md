@@ -1,4 +1,4 @@
-# Castle::Middleware
+# Castle::Middleware [![Build Status](https://travis-ci.org/brissmyr/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/brissmyr/castle-ruby-middleware)
 
 ## Installation
 
