@@ -11,7 +11,7 @@ module Castle
   # Main middleware definition
   module Middleware
     class << self
-      attr_writer :configuration, :event_mapping
+      attr_writer :configuration
 
       def configure
         raise ArgumentError unless block_given?
