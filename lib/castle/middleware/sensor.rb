@@ -6,7 +6,7 @@ module Castle
       attr_reader :app
       attr_reader :config
 
-      JS_IS_INJECTED_KEY = 'castle.js_is_injected'
+      JS_IS_INJECTED_KEY = 'castle.js_is_injected'.freeze
       SNIPPET = File.read(File.expand_path('../../../../data/castle.snippet.js', __FILE__))
 
       def initialize(app)

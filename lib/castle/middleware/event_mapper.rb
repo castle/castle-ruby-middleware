@@ -56,9 +56,9 @@ module Castle
       def self.match?(mapping, conditions)
         status, mtd, path = conditions.values_at(:status, :method, :path)
         return false if [status, mtd, path].include?(nil)
-        mapping.status.match?(status.to_s) &&
-          mapping.method.match?(mtd.to_s) &&
-          mapping.path.match?(path.to_s)
+        mapping.status.match(status.to_s) &&
+          mapping.method.match(mtd.to_s) &&
+          mapping.path.match(path.to_s)
       end
     end
   end
