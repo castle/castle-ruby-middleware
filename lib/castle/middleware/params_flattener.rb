@@ -3,7 +3,7 @@
 module Castle
   module Middleware
     # Flatten nested Hashes
-    class ParamsFlatter
+    class ParamsFlattener
       def self.call(object, prefix = nil)
         if object.is_a? Hash
           object.map do |key, value|

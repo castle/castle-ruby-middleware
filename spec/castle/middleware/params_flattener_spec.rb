@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Castle::Middleware::ParamsFlatter do
+describe Castle::Middleware::ParamsFlattener do
   describe '::call' do
     subject { described_class.(params) }
 

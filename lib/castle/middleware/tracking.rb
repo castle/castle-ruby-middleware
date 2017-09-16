@@ -42,7 +42,7 @@ module Castle
         event_name = mapping.event
         properties = mapping.properties
 
-        flat_params = Middleware::ParamsFlatter.(req.params)
+        flat_params = Middleware::ParamsFlattener.(req.params)
 
         event_properties = properties.each_with_object({}) do |(property, param), hash|
           hash[property] = flat_params[param]

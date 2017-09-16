@@ -2,7 +2,7 @@
 
 require 'castle/middleware/configuration'
 require 'castle/middleware/event_mapper'
-require 'castle/middleware/params_flatter'
+require 'castle/middleware/params_flattener'
 require 'castle/middleware/sensor'
 require 'castle/middleware/tracking'
 require 'castle/middleware/version'
