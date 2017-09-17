@@ -21,7 +21,42 @@ The middleware will insert itself into the Rack middleware stack.
 
 ## Usage
 
-The middleware will insert Castle.js into the HEAD tag on all your pages, as well as log track any POST, PUT and DELETE requests as Castle events.
+By default the middleware will insert [Castle.js](https://castle.io/docs/tracking) into the HEAD tag on all your pages.
+
+### Mapping events
+
+To start tracking events to Castle, you need to setup which routes should be mapped to
+which Castle [security event](https://castle.io/docs/events).
+
+```yaml
+# config/castle.yml
+---
+events:
+  $login.failed:
+    path: /session
+    method: POST
+    status: 401,
+    properties:
+      email: 'session.email' # Send user email extracted from params['session']['email']
+  $login.succeeded: # Remember to register the current user, see below
+    path: /session
+    method: POST
+    status: 302
+  $password_change.succeeded:
+    path: !ruby/regexp '\/users\/\d+\/account'
+    method: POST
+    status: 200
+```
+
+
+By default the middleware will look for a YAML configuration file located at `config/castle.yml`. If you need to place this elsewhere this can be configured using the
+`file_path` option, eg.:
+
+```ruby
+Castle::Middleware.configure do |config|
+  config.file_path = './castle_config.yml'
+end
+```
 
 ### Identifying the logged in user
 
