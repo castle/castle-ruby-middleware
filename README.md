@@ -28,8 +28,6 @@ By default the middleware will insert [Castle.js](https://castle.io/docs/trackin
 To start tracking events to Castle, you need to setup which routes should be mapped to
 which Castle [security event](https://castle.io/docs/events).
 
-#### config/castle.yml
-
 ```yaml
 # config/castle.yml
 ---
@@ -39,8 +37,8 @@ events:
     method: POST
     status: 401,
     properties:
-      email: 'session.email' # Send user email extracted from session['email']
-  $login.succeeded:          # Remember to register the current user, see below
+      email: 'session.email' # Send user email extracted from params['session']['email']
+  $login.succeeded: # Remember to register the current user, see below
     path: /session
     method: POST
     status: 302
