@@ -1,4 +1,4 @@
-# Castle::Middleware [![Build Status](https://travis-ci.org/brissmyr/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/brissmyr/castle-ruby-middleware)
+# Castle::Middleware [![Build Status](https://travis-ci.org/brissmyr/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/brissmyr/castle-ruby-middleware) [![Coverage Status](https://coveralls.io/repos/github/brissmyr/castle-ruby-middleware/badge.svg?branch=master)](https://coveralls.io/github/brissmyr/castle-ruby-middleware?branch=master)
 
 ## Installation
 
