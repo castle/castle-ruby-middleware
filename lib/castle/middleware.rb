@@ -29,7 +29,7 @@ module Castle
 
       def log(level, message)
         return unless Middleware.configuration.logger
-        Middleware.configuration.logger.send(level.to_s, message)
+        Middleware.configuration.logger.public_send(level.to_s, message)
       end
 
       def track(params, context)
