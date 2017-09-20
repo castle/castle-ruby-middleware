@@ -1,0 +1,28 @@
+---
+:events:
+  :$login.succeeded:
+    :status: '302'
+    :method: POST
+    :path: "/users/sign_in"
+  :$login.failed:
+    :status: '200'
+    :method: POST
+    :path: "/users/sign_in"
+    :properties:
+      :email: user.email
+  :$logout.succeeded:
+    :status: '302'
+    :method: DELETE
+    :path: "/users/sign_out"
+  :$password_reset.requested:
+    :status: !ruby/regexp /.*/
+    :method: POST
+    :path: "/users/password"
+    :properties:
+      :email: user.email
+  :$password_reset.succeeded:
+    :status: '302'
+    :method: PUT
+    :path: "/users/password"
+    :properties:
+      :email: user.email

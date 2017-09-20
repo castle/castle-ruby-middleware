@@ -58,6 +58,11 @@ Castle::Middleware.configure do |config|
 end
 ```
 
+#### Devise
+
+If you're using [Device](https://github.com/plataformatec/devise) as authentication solution, check out [this example config](examples/castle_devise.yml) for how to map the most common security events
+
+
 ### Identifying the logged in user
 
 Call `identify` on the `env['castle']` object to register the currently logged in user. This call will not issue an API request, but instead piggyback the information on the next server-side event.
