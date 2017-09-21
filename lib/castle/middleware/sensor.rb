@@ -17,16 +17,15 @@ module Castle
       def call(env)
         app_result = app.call(env)
 
-        begin
+        #begin
           return app_result unless add_js?(env, app_result[0], app_result[1])
-
           response_string = add_js(env, app_result[2])
 
           build_response(env, app_result, response_string)
-        rescue => e
-          log(:debug, "[Castle] castle.js could not be added because #{e} exception")
-          app_result
-        end
+        # rescue => e
+        #   log(:debug, "[Castle] castle.js could not be added because #{e} exception")
+        #   app_result
+        # end
       end
 
       def log(level, message)
