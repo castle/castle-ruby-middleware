@@ -47,9 +47,10 @@ module Castle
       end
 
       def self.build(config)
-        raise ArgumentError, 'Invalid format' unless config.is_a?(Hash)
+        raise ArgumentError, 'Invalid format' unless config.is_a?(::Hash)
         config.each_with_object(new) do |(event, conditions), mapping|
-          mapping.add(event, conditions)
+          conditions = [conditions] unless conditions.is_a?(::Array)
+          conditions.each { |c| mapping.add(event, c) }
         end
       end
 
