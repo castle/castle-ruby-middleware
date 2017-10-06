@@ -58,6 +58,26 @@ Castle::Middleware.configure do |config|
 end
 ```
 
+#### Multiple paths per event
+
+In some cases you might have multiple paths that should track the same event. Eg. if you have one login endpoint for API devices, and one for webapps. This is possible by specifying multiple paths as an array under each event definition:
+
+```yaml
+events:
+  $login.failed:
+    - path: /session
+      method: POST
+      status: 401
+      properties:
+        email: 'session.email'
+    - path: /other_session
+      method: PUT
+      status: 300
+      properties:
+        email: 'session.email'
+```
+
+
 #### Devise
 
 If you're using [Device](https://github.com/plataformatec/devise) as authentication solution, check out [this example config](examples/castle_devise.yml) for how to map the most common security events
