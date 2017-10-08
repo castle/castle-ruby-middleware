@@ -12,8 +12,8 @@ module Castle
         api_secret
         app_id
         auto_insert_middleware
-        events
         error_handler
+        events
         file_path
         logger
         transport

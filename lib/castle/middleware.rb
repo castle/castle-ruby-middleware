@@ -36,12 +36,11 @@ module Castle
         client_id, ip, headers = context.values_at(:client_id, :ip, :headers)
         log(:debug, "[Castle] Tracking #{params[:name]}")
         castle = ::Castle::API.new(client_id, ip, headers)
-        begin
-          castle.request('track', params)
-        rescue Castle::Error => e
-          if Middleware.configuration.error_handler.is_a?(Proc)
-            Middleware.configuration.error_handler.call(e)
-          end
+        castle.request('track', params)
+      rescue Castle::Error => e
+        log(:warn, "[Castle] Can't send tracking request because #{e} exception")
+        if configuration.error_handler.is_a?(Proc)
+          configuration.error_handler.call(e)
         end
       end
     end
