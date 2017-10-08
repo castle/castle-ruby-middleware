@@ -39,6 +39,9 @@ module Castle
         begin
           castle.request('track', params)
         rescue Castle::Error => e
+          if Middleware.configuration.error_handler.is_a?(Proc)
+            Middleware.configuration.error_handler.call(e)
+          end
         end
       end
     end
