@@ -1,23 +1,9 @@
-
 # frozen_string_literal: true
+
+require 'castle/middleware/request_config'
 
 module Castle
   module Middleware
-    class RequestConfig
-      attr_reader :user_id
-      attr_reader :traits
-      attr_reader :props
-
-      def identify(user_id, traits)
-        @user_id = user_id
-        @traits = traits
-      end
-
-      def properties(props)
-        @props = props
-      end
-    end
-
     class Tracking
       attr_reader :app
 
