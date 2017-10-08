@@ -148,6 +148,15 @@ end
 
 ```
 
+### Handling errors
+
+By default, all Castle exceptions are handled silently, but you can also create a custom error handler:
+
+```ruby
+config.error_handler = lambda do |exception|
+  # Handle error from Castle
+end
+```
 
 ## License
 

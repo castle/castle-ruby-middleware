@@ -4,6 +4,7 @@ require 'spec_helper'
 
 describe Castle::Middleware::Configuration do
   subject(:instance) { described_class.new }
+
   describe '#reset!' do
     before { instance.api_secret = 'secret' }
 

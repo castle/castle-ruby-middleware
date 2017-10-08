@@ -12,6 +12,7 @@ module Castle
         api_secret
         app_id
         auto_insert_middleware
+        error_handler
         events
         file_path
         logger
@@ -41,6 +42,7 @@ module Castle
         @app_id = nil
         @auto_insert_middleware = true
         @events = {}
+        @error_handler = nil
         @file_path = 'config/castle.yml'
         @logger = defined?(::Rails) ? Rails.logger : nil
         @transport = Transport::Sync
