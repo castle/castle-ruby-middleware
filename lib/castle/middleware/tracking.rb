@@ -24,13 +24,9 @@ module Castle
 
         return app_result if mapping.nil?
 
-        event_properties = self.class.collect_event_properties(req.params, mapping.properties)
-
-        # Extract headers from request into a string
-        headers = ::Castle::Extractors::Headers.new(req).call
-
-        # Read client ID from cookies
-        client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
+        event_properties = self.class.collect_event_properties(
+          req.params, mapping.properties
+        ).merge(env['castle'].props || {})
 
         # Send request as configured
         Middleware.configuration.transport.(
@@ -38,13 +34,9 @@ module Castle
             user_id: env['castle'].user_id,
             traits: env['castle'].traits,
             name: mapping.event,
-            properties: (env['castle'].props || {}).merge(event_properties)
+            properties: event_properties
           },
-          {
-            headers: headers,
-            client_id: client_id,
-            ip: req.ip
-          }
+          self.class.extract_context(req, app_result)
         )
 
         app_result
@@ -65,6 +57,19 @@ module Castle
           end
 
           event_properties
+        end
+
+        def extract_context(req, app_result)
+          # Extract headers from request into a string
+          headers = ::Castle::Extractors::Headers.new(req).call
+
+          # Read client ID from cookies
+          client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
+          {
+            headers: headers,
+            client_id: client_id,
+            ip: req.ip
+          }
         end
       end
     end
