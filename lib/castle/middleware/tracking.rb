@@ -24,19 +24,7 @@ module Castle
 
         return app_result if mapping.nil?
 
-        # event_name = build_event_name(req, app_result)
-        event_name = mapping.event
-        properties = mapping.properties
-
-        flat_params = Middleware::ParamsFlattener.(req.params)
-
-        event_properties = properties.each_with_object({}) do |(property, param), hash|
-          hash[property] = flat_params[param]
-        end
-
-        # Convert password to a boolean
-        # TODO: Check agains list of known password field names
-        event_properties[:password] = !event_properties[:password].to_s.empty?
+        event_properties = self.class.collect_event_properties(req.params, mapping.properties)
 
         # Extract headers from request into a string
         headers = ::Castle::Extractors::Headers.new(req).call
@@ -49,7 +37,7 @@ module Castle
           {
             user_id: env['castle'].user_id,
             traits: env['castle'].traits,
-            name: event_name,
+            name: mapping.event,
             properties: (env['castle'].props || {}).merge(event_properties)
           },
           {
@@ -62,13 +50,22 @@ module Castle
         app_result
       end
 
-      def build_event_name(request, response)
-        event_name = "[#{response[0]}] #{request.request_method} #{request.path}"
-        if response[1]['Location']
-          event_name += ' > ' + URI(response[1]['Location']).path
-        end
+      class << self
+        def collect_event_properties(request_params, properties_map)
+          flat_params = Middleware::ParamsFlattener.(request_params)
 
-        event_name
+          event_properties = properties_map.each_with_object({}) do |(property, param), hash|
+            hash[property] = flat_params[param]
+          end
+
+          # Convert password to a boolean
+          # TODO: Check agains list of known password field names
+          if event_properties.key?(:password)
+            event_properties[:password] = !event_properties[:password].to_s.empty?
+          end
+
+          event_properties
+        end
       end
     end
   end
