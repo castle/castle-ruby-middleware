@@ -36,7 +36,10 @@ module Castle
         client_id, ip, headers = context.values_at(:client_id, :ip, :headers)
         log(:debug, "[Castle] Tracking #{params[:name]}")
         castle = ::Castle::API.new(client_id, ip, headers)
-        castle.request('track', params)
+        begin
+          castle.request('track', params)
+        rescue Castle::Error => e
+        end
       end
     end
 
