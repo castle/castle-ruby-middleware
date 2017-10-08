@@ -13,6 +13,11 @@ module Castle
     class << self
       attr_writer :configuration
 
+      def call_error_handler(exception)
+        return unless configuration.error_handler.is_a?(Proc)
+        configuration.error_handler.call(exception)
+      end
+
       def configure
         raise ArgumentError unless block_given?
         yield(configuration)
@@ -39,9 +44,7 @@ module Castle
         castle.request('track', params)
       rescue Castle::Error => e
         log(:warn, "[Castle] Can't send tracking request because #{e} exception")
-        if configuration.error_handler.is_a?(Proc)
-          configuration.error_handler.call(e)
-        end
+        call_error_handler(e)
       end
     end
 

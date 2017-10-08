@@ -11,28 +11,6 @@ describe Castle::Middleware::Configuration do
     it { expect { instance.reset! }.to change(instance, :api_secret).to nil }
   end
 
-  describe '#error_handler' do
-    let(:api) { double }
-
-    before do
-      instance.error_handler = handler
-      ::Castle::Middleware.configuration = instance
-      allow(::Castle::API).to receive(:new).and_return(api)
-      allow(api).to receive(:request).and_raise(::Castle::Error)
-    end
-
-    context 'when handler configured' do
-      let(:handler) { spy }
-
-      before do
-        allow(handler).to receive(:is_a?).and_return(Proc)
-        ::Castle::Middleware.track({}, {})
-      end
-
-      it { expect(handler).to have_received(:call) }
-    end
-  end
-
   describe '#events.size' do
     subject { instance.events.size }
 
