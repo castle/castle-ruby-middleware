@@ -1,4 +1,4 @@
-# Castle::Middleware [![Build Status](https://travis-ci.org/brissmyr/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/brissmyr/castle-ruby-middleware) [![Coverage Status](https://coveralls.io/repos/github/brissmyr/castle-ruby-middleware/badge.svg?branch=master)](https://coveralls.io/github/brissmyr/castle-ruby-middleware?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/f5473d28967df1edf3b7/maintainability)](https://codeclimate.com/github/castle/castle-ruby-middleware/maintainability)
+# Castle::Middleware [![Build Status](https://travis-ci.org/castle/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/castle/castle-ruby-middleware) [![Coverage Status](https://coveralls.io/repos/github/castle/castle-ruby-middleware/badge.svg)](https://coveralls.io/github/castle/castle-ruby-middleware) [![Maintainability](https://api.codeclimate.com/v1/badges/f5473d28967df1edf3b7/maintainability)](https://codeclimate.com/github/castle/castle-ruby-middleware/maintainability)
 
 ## Installation
 
