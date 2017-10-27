@@ -1,4 +1,11 @@
-# Castle::Middleware [![Build Status](https://travis-ci.org/castle/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/castle/castle-ruby-middleware) [![Coverage Status](https://coveralls.io/repos/github/castle/castle-ruby-middleware/badge.svg)](https://coveralls.io/github/castle/castle-ruby-middleware) [![Maintainability](https://api.codeclimate.com/v1/badges/f5473d28967df1edf3b7/maintainability)](https://codeclimate.com/github/castle/castle-ruby-middleware/maintainability)
+# Ruby/Rack Middleware for Castle
+
+[![Build Status](https://travis-ci.org/castle/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/castle/castle-ruby-middleware) 
+[![Coverage Status](https://coveralls.io/repos/github/castle/castle-ruby-middleware/badge.svg)](https://coveralls.io/github/castle/castle-ruby-middleware) 
+[![Maintainability](https://api.codeclimate.com/v1/badges/f5473d28967df1edf3b7/maintainability)](https://codeclimate.com/github/castle/castle-ruby-middleware/maintainability)
+
+**[Castle](https://castle.io) adds real-time monitoring of your authentication stack, instantly notifying you and your users on potential account hijacks.**
+
 
 ## Installation
 
