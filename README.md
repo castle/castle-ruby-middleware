@@ -12,7 +12,7 @@
 Add this line to your Rack application's Gemfile:
 
 ```ruby
-gem 'castle-middleware'
+gem 'castle-middleware', git: 'https://github.com/castle/castle-ruby-middleware.git'
 ```
 
 And set your Castle credentials in an initializer:
