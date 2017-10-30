@@ -87,7 +87,7 @@ events:
 
 #### Devise
 
-If you're using [Device](https://github.com/plataformatec/devise) as authentication solution, check out [this example config](examples/castle_devise.yml) for how to map the most common security events
+If you're using [Devise](https://github.com/plataformatec/devise) as authentication solution, check out [this example config](examples/castle_devise.yml) for how to map the most common security events
 
 
 ### Identifying the logged in user
