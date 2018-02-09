@@ -30,13 +30,13 @@ module Castle
 
         # Send request as configured
         Middleware.configuration.transport.(
-          {
+          Castle::Client.to_context(req),
+          Castle::Client.to_options(
             user_id: env['castle'].user_id,
             traits: env['castle'].traits,
             name: mapping.event,
             properties: event_properties
-          },
-          self.class.extract_context(req, app_result)
+          )
         )
 
         app_result
@@ -57,19 +57,6 @@ module Castle
           end
 
           event_properties
-        end
-
-        def extract_context(req, app_result)
-          # Extract headers from request into a string
-          headers = ::Castle::Extractors::Headers.new(req).call
-
-          # Read client ID from cookies
-          client_id = ::Castle::Extractors::ClientId.new(req).call(app_result, '__cid')
-          {
-            headers: headers,
-            client_id: client_id,
-            ip: req.ip
-          }
         end
       end
     end

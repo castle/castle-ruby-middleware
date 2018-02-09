@@ -5,8 +5,8 @@ module Castle
     module Transport
       # Send a track request to castle in sync mode
       module Sync
-        def self.call(params, context)
-          Middleware.track(params, context)
+        def self.call(context, options)
+          Middleware.track(context, options)
         end
       end
     end

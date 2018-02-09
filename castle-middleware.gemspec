@@ -34,5 +34,5 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.2.6'
 
-  spec.add_dependency 'castle-rb', '~> 2.3.2'
+  spec.add_dependency 'castle-rb', '< 4.0'
 end

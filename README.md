@@ -1,7 +1,7 @@
 # Ruby/Rack Middleware for Castle
 
-[![Build Status](https://travis-ci.org/castle/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/castle/castle-ruby-middleware) 
-[![Coverage Status](https://coveralls.io/repos/github/castle/castle-ruby-middleware/badge.svg)](https://coveralls.io/github/castle/castle-ruby-middleware) 
+[![Build Status](https://travis-ci.org/castle/castle-ruby-middleware.svg?branch=master)](https://travis-ci.org/castle/castle-ruby-middleware)
+[![Coverage Status](https://coveralls.io/repos/github/castle/castle-ruby-middleware/badge.svg)](https://coveralls.io/github/castle/castle-ruby-middleware)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f5473d28967df1edf3b7/maintainability)](https://codeclimate.com/github/castle/castle-ruby-middleware/maintainability)
 
 **Protect your users from stolen credentials. [Castle](https://castle.io) detects and mitigates account takeovers in web and mobile apps**
@@ -139,16 +139,16 @@ to send requests in a background worker you can override the transport method
 class CastleWorker
   include Sidekiq::Worker
 
-  def perform(params, context)
-    ::Castle::Middleware.track(params, context)
+  def perform(context, params)
+    ::Castle::Middleware.track(context, params)
   end
 end
 
 # initializers/castle.rb
 
 Castle::Middleware.configure do |config|
-  config.transport = lambda do |params, context|
-    CastleWorker.perform_async(params, context)
+  config.transport = lambda do |context, params|
+    CastleWorker.perform_async(context, params)
   end
 end
 

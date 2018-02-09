@@ -67,7 +67,7 @@ describe Castle::Middleware do
 
     context 'when request raises exception' do
       before do
-        allow(api).to receive(:request).and_raise(::Castle::Error)
+        allow(api).to receive(:track).and_raise(::Castle::Error)
         allow(described_class).to receive(:call_error_handler)
 
         described_class.track({}, {})

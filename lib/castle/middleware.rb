@@ -37,11 +37,10 @@ module Castle
         Middleware.configuration.logger.public_send(level.to_s, message)
       end
 
-      def track(params, context)
-        client_id, ip, headers = context.values_at(:client_id, :ip, :headers)
-        log(:debug, "[Castle] Tracking #{params[:name]}")
-        castle = ::Castle::API.new(client_id, ip, headers)
-        castle.request('track', params)
+      def track(context, options)
+        log(:debug, "[Castle] Tracking #{options[:name]}")
+        castle = ::Castle::API.new(context, options)
+        castle.track(options)
       rescue Castle::Error => e
         log(:warn, "[Castle] Can't send tracking request because #{e} exception")
         call_error_handler(e)
