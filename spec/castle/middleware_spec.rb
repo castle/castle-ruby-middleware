@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware do
   describe '::configuration' do
     subject(:config) { described_class.configuration }

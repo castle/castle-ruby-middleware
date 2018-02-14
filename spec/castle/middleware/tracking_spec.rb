@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware::Tracking do
   let(:app) { double }
   let(:env) { {} }
