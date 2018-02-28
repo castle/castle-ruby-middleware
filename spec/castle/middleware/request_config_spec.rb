@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware::RequestConfig do
   subject(:instance) { described_class.new }
 

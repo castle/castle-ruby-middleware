@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware::ParamsFlattener do
   describe '::call' do
     subject { described_class.(params) }

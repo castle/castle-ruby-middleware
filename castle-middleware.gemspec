@@ -32,10 +32,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'coveralls_reborn'
+  spec.required_ruby_version = '>= 2.2.6'
 
-  spec.add_dependency 'castle-rb', '~> 2.3.2'
+  spec.add_dependency 'castle-rb', '< 4.0'
 end

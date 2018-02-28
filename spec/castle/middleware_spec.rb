@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware do
   describe '::configuration' do
     subject(:config) { described_class.configuration }
@@ -65,11 +63,11 @@ describe Castle::Middleware do
   describe '::track' do
     let(:api) { spy }
 
-    before { allow(::Castle::API).to receive(:new).and_return(api) }
+    before { allow(::Castle::Client).to receive(:new).and_return(api) }
 
     context 'when request raises exception' do
       before do
-        allow(api).to receive(:request).and_raise(::Castle::Error)
+        allow(api).to receive(:track).and_raise(::Castle::Error)
         allow(described_class).to receive(:call_error_handler)
 
         described_class.track({}, {})

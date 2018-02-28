@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Castle::Middleware::Tracking do
   let(:app) { double }
   let(:env) { {} }
@@ -30,9 +28,6 @@ describe Castle::Middleware::Tracking do
       end
     end
 
-    allow(env).to receive(:[]).with('castle') do
-      ::Castle::Middleware::RequestConfig.new
-    end
     allow(app).to receive(:call).and_return(response)
   end
 
