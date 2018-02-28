@@ -34,7 +34,7 @@ module Castle
           Castle::Client.to_options(
             user_id: env['castle'].user_id,
             traits: env['castle'].traits,
-            name: mapping.event,
+            event: mapping.event,
             properties: event_properties
           )
         )

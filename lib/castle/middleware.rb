@@ -38,7 +38,7 @@ module Castle
       end
 
       def track(context, options)
-        log(:debug, "[Castle] Tracking #{options[:name]}")
+        log(:debug, "[Castle] Tracking #{options[:event]}")
         castle = ::Castle::Client.new(context, options)
         castle.track(options)
       rescue Castle::Error => e
