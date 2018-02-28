@@ -39,7 +39,7 @@ module Castle
 
       def track(context, options)
         log(:debug, "[Castle] Tracking #{options[:name]}")
-        castle = ::Castle::API.new(context, options)
+        castle = ::Castle::Client.new(context, options)
         castle.track(options)
       rescue Castle::Error => e
         log(:warn, "[Castle] Can't send tracking request because #{e} exception")

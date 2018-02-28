@@ -63,7 +63,7 @@ describe Castle::Middleware do
   describe '::track' do
     let(:api) { spy }
 
-    before { allow(::Castle::API).to receive(:new).and_return(api) }
+    before { allow(::Castle::Client).to receive(:new).and_return(api) }
 
     context 'when request raises exception' do
       before do
