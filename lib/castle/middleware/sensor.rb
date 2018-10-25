@@ -6,8 +6,8 @@ module Castle
       attr_reader :app
       attr_reader :config
 
-      JS_IS_INJECTED_KEY = 'castle.js_is_injected'.freeze
-      SNIPPET = File.read(File.expand_path('../../../../data/castle.snippet.js', __FILE__))
+      JS_IS_INJECTED_KEY = 'castle.injected'.freeze
+      CJS_PATH = 'https://d2t77mnxyo7adj.cloudfront.net/v1/c.js'.freeze
 
       def initialize(app)
         @app = app
@@ -102,17 +102,12 @@ module Castle
       def complete_js_content(env)
         commands = [
           "\n",
-          app_id_command(env),
           identify_command(env),
           secure_command(env),
           "\n"
         ].compact.join
 
-        snippet_js_tag(env) + script_tag(commands, env)
-      end
-
-      def app_id_command(_)
-        "_castle('setAppId', '#{Castle::Middleware.configuration.app_id}');"
+        snippet_cjs_tag + script_tag(commands, env)
       end
 
       def identify_command(env)
@@ -139,12 +134,8 @@ module Castle
         js_config[:payload][:person] = person_data if person_data
       end
 
-      def snippet_js_tag(env)
-        script_tag(js_snippet, env)
-      end
-
-      def js_snippet
-        SNIPPET
+      def snippet_cjs_tag
+        "<script type=\"text/javascript\" src=\"#{CJS_PATH}?#{Castle::Middleware.configuration.app_id}\"></script>"
       end
 
       def script_tag(content, env)

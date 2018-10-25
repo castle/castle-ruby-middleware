@@ -30,7 +30,7 @@ describe Castle::Middleware::Sensor do
 
   matcher :inject_the_script do
     match_unless_raises do |subscriber|
-      expect(subscriber[2]).to include described_class::SNIPPET
+      expect(subscriber[2]).to include described_class::CJS_PATH
     end
   end
 
