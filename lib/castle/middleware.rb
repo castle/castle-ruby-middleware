@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'castle/middleware/configuration'
+require 'castle/middleware/configuration_options'
 require 'castle/middleware/event_mapper'
 require 'castle/middleware/params_flattener'
 require 'castle/middleware/sensor'
@@ -14,18 +15,19 @@ module Castle
       attr_writer :configuration
 
       def call_error_handler(exception)
-        return unless configuration.error_handler.is_a?(Proc)
+        return unless configuration.error_handler
         configuration.error_handler.call(exception)
       end
 
       def configure
         raise ArgumentError unless block_given?
-        yield(configuration)
+        @configuration_options = ConfigurationOptions.new
+        yield(@configuration_options)
         @event_mapping = nil
       end
 
       def configuration
-        @configuration ||= Configuration.new
+        @configuration ||= Configuration.new(@configuration_options)
       end
 
       def event_mapping
@@ -39,17 +41,21 @@ module Castle
 
       def track(context, options)
         log(:debug, "[Castle] Tracking #{options[:event]}")
-        castle = ::Castle::Client.new(context, options)
+        castle = ::Castle::Client.new(context)
         castle.track(options)
       rescue Castle::Error => e
         log(:warn, "[Castle] Can't send tracking request because #{e} exception")
         call_error_handler(e)
       end
-    end
 
-    if defined?(Rails::VERSION) && Rails::VERSION::MAJOR >= 3 &&
-       Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('3.2')
-      require 'castle/middleware/railtie'
+      def authenticate(context, options)
+        log(:debug, "[Castle] Authenticating #{options[:event]}")
+        castle = ::Castle::Client.new(context)
+        castle.authenticate(options)
+      rescue Castle::Error => e
+        log(:warn, "[Castle] Can't send authenticating request because #{e} exception")
+        call_error_handler(e)
+      end
     end
   end
 end

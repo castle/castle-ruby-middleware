@@ -12,6 +12,7 @@ module Castle
       end
 
       def call(env)
+        byebug
         env['castle'] = RequestConfig.new
 
         req = Rack::Request.new(env)

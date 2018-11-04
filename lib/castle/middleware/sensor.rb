@@ -16,6 +16,7 @@ module Castle
 
       def call(env)
         app_result = app.call(env)
+        byebug
 
         begin
           return app_result unless add_js?(env, app_result[0], app_result[1])
@@ -34,7 +35,7 @@ module Castle
 
       def add_js?(env, status, headers)
         status == 200 && !env[JS_IS_INJECTED_KEY] &&
-          html?(headers) && !attachment?(headers) && !streaming?(env)
+          html?(headers) && !attachment?(headers) && !streaming?(headers)
       end
 
       def html?(headers)
@@ -46,9 +47,7 @@ module Castle
       end
 
       def streaming?(env)
-        return false unless defined?(ActionController::Live)
-
-        env['action_controller.instance'].class.included_modules.include?(ActionController::Live)
+        headers['Transfer-Encoding'].to_s == 'chunked'
       end
 
       def add_js(env, response)
@@ -125,40 +124,18 @@ module Castle
         "_castle('secure', '#{hmac}');"
       end
 
-      def add_person_data(js_config, env)
-        person_data = extract_person_data_from_controller(env)
-
-        return if person_data && person_data.empty?
-
-        js_config[:payload] ||= {}
-        js_config[:payload][:person] = person_data if person_data
-      end
-
       def snippet_cjs_tag
         "<script type=\"text/javascript\" src=\"#{CJS_PATH}?#{Castle::Middleware.configuration.app_id}\"></script>"
       end
 
       def script_tag(content, env)
-        if append_nonce?
-          nonce = ::SecureHeaders.content_security_policy_script_nonce(::Rack::Request.new(env))
-          script_tag_content = "\n<script type=\"text/javascript\" nonce=\"#{nonce}\">#{content}</script>"
-        else
-          script_tag_content = "\n<script type=\"text/javascript\">#{content}</script>"
-        end
-
+        script_tag_content = "\n<script type=\"text/javascript\">#{content}</script>"
         html_safe_if_needed(script_tag_content)
       end
 
       def html_safe_if_needed(string)
         string = string.html_safe if string.respond_to?(:html_safe)
         string
-      end
-
-      def append_nonce?
-        defined?(::SecureHeaders) && ::SecureHeaders.respond_to?(:content_security_policy_script_nonce) &&
-          defined?(::SecureHeaders::Configuration) &&
-          !::SecureHeaders::Configuration.get.csp.opt_out? &&
-          !::SecureHeaders::Configuration.get.current_csp[:script_src].to_a.include?("'unsafe-inline'")
       end
     end
   end

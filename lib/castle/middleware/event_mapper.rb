@@ -35,6 +35,7 @@ module Castle
       end
 
       def find_by_rack_request(result, request)
+        byebug
         find(
           status: result.first, # Rack status code
           method: request.request_method,

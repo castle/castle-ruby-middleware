@@ -1,57 +1,39 @@
 # frozen_string_literal: true
 
 require 'castle-rb'
-require 'castle/middleware/transport/sync'
 require 'yaml'
 
 module Castle
   module Middleware
     # Configuration object for Middleware
     class Configuration
-      %i[
-        api_secret
-        app_id
-        auto_insert_middleware
-        error_handler
-        events
-        file_path
-        logger
-        transport
-        pub_key
-      ].each do |opt|
-        attr_accessor opt
-      end
+      extend SingleForwardable
+      attr_accessor :options, :events
+      def_single_delegators :options, :logger, :transport, :error_handler, :api_secret
 
-      def initialize
-        reset!
-        load_config_file!
-      end
-
-      def load_config_file!
-        file_config = YAML.load_file(file_path)
-        self.events = file_config['events'] || {}
-      rescue Errno::ENOENT
-        logger.send('warn', '[Castle] No config file found')
-      rescue Psych::SyntaxError
-        logger.send('error', '[Castle] Invalid YAML in config file')
+      def initialize(options = nil)
+        self.options = options
+        setup
       end
 
       # Reset to default options
-      def reset!
-        @api_secret = nil
-        @app_id = nil
-        @auto_insert_middleware = true
-        @events = {}
-        @error_handler = nil
-        @file_path = 'config/castle.yml'
-        @logger = defined?(::Rails) ? Rails.logger : nil
-        @transport = Transport::Sync
-        @pub_key = nil
+      def setup
+        options.file_path ||= 'config/castle.yml'
+        options.transport = lambda do |context, options|
+          Castle::Middleware.track(context, options)
+        end
+        # Forward setting to Castle SDK
+        Castle.api_secret = api_secret
+        load_config_file
       end
 
-      # Forward setting to Castle SDK
-      def api_secret=(api_secret)
-        @api_secret = Castle.api_secret = api_secret
+      def load_config_file
+        file_config = YAML.load_file(options.file_path)
+        self.events = file_config['events'] || {}
+      rescue Errno::ENOENT
+        Castle::Middleware.log(:error, '[Castle] No config file found')
+      rescue Psych::SyntaxError
+        Castle::Middleware.log(:error, '[Castle] Invalid YAML in config file')
       end
     end
   end
