@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Castle
-  module Middleware
+  class Middleware
     # Map a request path to a Castle event name
     class EventMapper
       Object = Struct.new(:event, :method, :path, :status, :properties)
@@ -14,6 +14,7 @@ module Castle
 
       def add(event, conditions)
         raise ArgumentError unless conditions.is_a?(::Hash)
+
         conditions = conditions.each_with_object({}) do |(k, v), hash|
           hash[k.to_sym] = v || ''
         end
@@ -35,7 +36,6 @@ module Castle
       end
 
       def find_by_rack_request(result, request)
-        byebug
         find(
           status: result.first, # Rack status code
           method: request.request_method,
@@ -49,6 +49,7 @@ module Castle
 
       def self.build(config)
         raise ArgumentError, 'Invalid format' unless config.is_a?(::Hash)
+
         config.each_with_object(new) do |(event, conditions), mapping|
           conditions = [conditions] unless conditions.is_a?(::Array)
           conditions.each { |c| mapping.add(event, c) }
@@ -58,6 +59,7 @@ module Castle
       def self.match?(mapping, conditions)
         status, mtd, path = conditions.values_at(:status, :method, :path)
         return false if [status, mtd, path].include?(nil)
+
         mapping.status.match(status.to_s) &&
           mapping.method.match(mtd.to_s) &&
           mapping.path.match(path.to_s)

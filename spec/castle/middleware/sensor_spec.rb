@@ -22,7 +22,7 @@ describe Castle::Middleware::Sensor do
       end
     end
 
-    allow(Castle::Middleware.configuration).to receive(:api_secret) { 'secret' }
+    allow(Castle::Middleware.instance.configuration).to receive(:api_secret) { 'secret' }
     allow(env).to receive(:[]).with(described_class::JS_IS_INJECTED_KEY) { false }
     allow(env).to receive(:[]).with('castle') { request_config }
     allow(app).to receive(:call).and_return(response)

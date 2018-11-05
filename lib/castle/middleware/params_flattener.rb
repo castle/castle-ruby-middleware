@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Castle
-  module Middleware
+  class Middleware
     # Flatten nested Hashes
     class ParamsFlattener
       def self.call(object, prefix = nil)

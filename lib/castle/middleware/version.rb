@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Castle
-  module Middleware
-    VERSION = '0.0.9'.freeze
+  class Middleware
+    VERSION = '0.0.9'
   end
 end

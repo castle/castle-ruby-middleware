@@ -32,15 +32,16 @@ describe Castle::Middleware::Tracking do
   end
 
   describe '#call' do
-    subject(:call) { described_class.new(app).call(env) }
+    subject(:call) { service.call(env) }
 
+    let(:service) {  described_class.new(app) }
     let(:transport) { spy }
 
     before do
-      allow(described_class).to receive(:collect_event_properties).and_return({})
-      allow(::Castle::Middleware.configuration).to receive(:transport).and_return(transport)
+      allow(service).to receive(:collect_event_properties).and_return({})
+      allow(::Castle::Middleware.instance.configuration).to receive(:transport).and_return(transport)
       allow(
-        ::Castle::Middleware.event_mapping
+        ::Castle::Middleware.instance.event_mapping
       ).to receive(:find_by_rack_request).and_return(mapping)
     end
 
@@ -66,7 +67,7 @@ describe Castle::Middleware::Tracking do
   end
 
   describe '::collect_event_properties' do
-    subject(:result) { described_class.collect_event_properties(req_params, prop_map) }
+    subject(:result) { described_class.new(app).collect_event_properties(req_params, prop_map) }
     subject { result }
 
     let(:req_params) { { 'user.email' => 'testing', 'user.name' => 'John Doe' } }

@@ -1,6 +1,20 @@
 ---
+login:
+  method: POST
+  path: "/login"
+  user_id: uuid
+  status: '301'
+  authentication:
+    key: 'user.email'
+    password: 'user.password'
 events:
   $login.failed:
-    path: !ruby/regexp '/\/sign_in\/new/i'
-    status: 404
+    status: '302'
     method: POST
+    path: !ruby/regexp '/\/sign_in\/new/i'
+    properties:
+      email: user.email
+  $logout.succeeded:
+    status: '302'
+    method: DELETE
+    path: "/logout"

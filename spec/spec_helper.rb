@@ -10,7 +10,9 @@ require 'castle/middleware'
 
 RSpec.configure do |config|
   config.before(:each) do
-    ::Castle::Middleware.configuration.reset!
-    ::Castle::Middleware.configure {}
+    ::Castle::Middleware.configure do |c|
+      c.api_secret = 'secret'
+      c.file_path = "./spec/castle/middleware/castle_config.yml"
+    end
   end
 end

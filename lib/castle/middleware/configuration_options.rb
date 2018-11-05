@@ -1,22 +1,26 @@
 # frozen_string_literal: true
 
 module Castle
-  module Middleware
+  class Middleware
+    # Configuration options accessible for configure in mounted app
+
     class ConfigurationOptions
       %i[
         api_secret
         app_id
-        auto_insert_middleware
-        error_handler
+        tracker_url
         file_path
         logger
-        transport
+        events
+        login
       ].each do |opt|
         attr_accessor opt
       end
 
+      attr_reader :services
+
       def initialize
-        self.auto_insert_middleware = false
+        @services = ConfigurationServices.new
       end
     end
   end
