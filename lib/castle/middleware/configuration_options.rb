@@ -12,7 +12,7 @@ module Castle
         file_path
         logger
         events
-        login
+        login_event
       ].each do |opt|
         attr_accessor opt
       end

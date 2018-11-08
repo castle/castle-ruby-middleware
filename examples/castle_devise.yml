@@ -1,15 +1,13 @@
 ---
+login_event:
+  method: POST
+  path: "/users/sign_in"
+  user_id_method: uuid
+  success_status: '302'
+  authentication:
+    key: 'user.email'
+    name: 'email'
 events:
-  $login.succeeded:
-    status: '302'
-    method: POST
-    path: "/users/sign_in"
-  $login.failed:
-    status: '200'
-    method: POST
-    path: "/users/sign_in"
-    properties:
-      email: user.email
   $logout.succeeded:
     status: '302'
     method: DELETE

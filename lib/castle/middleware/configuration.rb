@@ -11,8 +11,7 @@ module Castle
       attr_reader :options
       def_delegators :@options,
                      :logger, :transport, :api_secret, :app_id, :tracker_url, :services,
-                     :events, :login
-      # :deny, :challenge, :logout, :provide_by_id, :provide_by_login_key, :validate_password
+                     :events, :login_event
       def_delegators :@middleware, :log, :track
 
       def initialize(options = nil)
@@ -25,6 +24,7 @@ module Castle
       def setup
         options.file_path ||= 'config/castle.yml'
         options.events ||= {}
+        options.login_event ||= {}
         services.transport ||= lambda do |context, options|
           track(context, options)
         end
@@ -36,7 +36,7 @@ module Castle
       def load_config_file
         file_config = YAML.load_file(options.file_path)
         options.events = (options.events || {}).merge(file_config['events'] || {})
-        options.login = (options.events || {}).merge(file_config['login'] || {})
+        options.login_event = (options.login_event || {}).merge(file_config['login_event'] || {})
       rescue Errno::ENOENT => e
         log(:error, '[Castle] No config file found')
       rescue Psych::SyntaxError

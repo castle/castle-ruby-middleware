@@ -13,7 +13,9 @@ describe Castle::Middleware::Sensor do
     module Rack
       class Response
         def initialize(b, s, h)
-          @s, @h, @b = [s, h, b]
+          @s = s
+          @h = h
+          @b = b
         end
 
         def finish
