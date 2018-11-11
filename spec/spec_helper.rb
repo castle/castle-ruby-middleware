@@ -12,6 +12,7 @@ RSpec.configure do |config|
   config.before(:each) do
     ::Castle::Middleware.configure do |c|
       c.api_secret = 'secret'
+      c.app_id = '1234'
       c.file_path = './spec/castle/middleware/castle_config.yml'
     end
   end

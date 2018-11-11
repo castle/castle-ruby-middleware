@@ -95,21 +95,37 @@ module Castle
       end
 
       def complete_js_content(env)
-        commands = [
+        [
+          "\n",
+          script_tag('', type: 'text/javascript', src: "#{CJS_PATH}?#{configuration.app_id}"),
+          script_tag(js_commands(env).join, js_options(env)),
+          "\n"
+        ].join
+      end
+
+      def js_commands(env)
+        [
           "\n",
           tracker_url_command,
           identify_command(env),
           secure_command(env),
           "\n"
-        ].compact.join
+        ].compact
+      end
 
-        snippet_cjs_tag + script_tag(commands, env)
+      def js_options(env)
+        options = { type: 'text/javascript' }
+        if configuration.security_headers
+          nonce = SecurityHeaders.call(env)
+          options[:nonce] = nonce unless nonce.nil?
+        end
+        options
       end
 
       def tracker_url_command
         return unless configuration.tracker_url
 
-        "_castle('setTrackerUrl', '#{Castle::Middleware.configuration.tracker_url}');"
+        "_castle('setTrackerUrl', '#{configuration.tracker_url}');"
       end
 
       def identify_command(env)
@@ -129,17 +145,14 @@ module Castle
         "_castle('secure', '#{hmac}');"
       end
 
-      def snippet_cjs_tag
-        "<script type=\"text/javascript\" src=\"#{CJS_PATH}?#{configuration.app_id}\"></script>"
-      end
-
-      def script_tag(content, _env)
-        script_tag_content = "\n<script type=\"text/javascript\">#{content}</script>"
+      def script_tag(content, options)
+        options_to_attrs = options.map { |k, v| "#{k}=\"#{v}\"" }.join(' ')
+        script_tag_content = "<script #{options_to_attrs}>#{content}</script>"
         html_safe_if_needed(script_tag_content)
       end
 
       def html_safe_if_needed(string)
-        # string = string.html_safe if string.respond_to?(:html_safe)
+        string = string.html_safe if string.respond_to?(:html_safe)
         string
       end
     end

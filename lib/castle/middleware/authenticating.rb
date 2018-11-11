@@ -1,54 +1,60 @@
 # frozen_string_literal: true
 
 require 'castle/middleware/request_config'
+require 'castle/middleware/event_mapper'
+require 'castle/middleware/params_flattener'
 
 module Castle
   class Middleware
     class Authenticating
       extend Forwardable
-      def_delegators :@middleware, :log, :configuration, :event_mapping, :authenticate, :track
+      def_delegators :@middleware, :log, :configuration, :authenticate, :track
 
       attr_reader :app
 
       def initialize(app)
         @app = app
         @middleware = Middleware.instance
+        @mapper = Castle::Middleware::EventMapper.build('$login.succeeded' => configuration.login_event)
       end
 
       def call(env)
         env['castle'] = RequestConfig.new
         req = Rack::Request.new(env)
+        login_req = login?(req)
 
-        resource = generate_resource if login?(req)
+        resource = generate_resource(req.params, env) if login_req
 
         # [status, headers, body]
         app_result = app.call(env)
 
-        if login?(req)
-          if login_success?(app_result)
+        if login_req
+          if login_success?(app_result, req)
             redirect_result = authentication_verdict(resource, req, env)
             return [301, { 'Location' => redirect_result }, []] if redirect_result
           else
             track_login_failed(req, env)
+            env['castle'].clear
           end
           app_result
         else
-          env['castle'].identify(nil, req.session['castle_user_id'], {}) if req.session['castle_user_id']
+          env['castle'].identify(req.session['castle_user_id'], {}) if req.session['castle_user_id']
           app_result
         end
       end
 
       private
 
-      def init_resource
-        key = ParamsFlattener.call(req.params)[configuration.authentication['key']]
+      def generate_resource(params, env)
+        key = configuration.login_event.dig('authentication', 'key')
+        key_value = ParamsFlattener.call(params)[key]
         traits = {}
 
-        resource = configuration.services.provide_by_login_key.call(key)
-        traits[configuration.authentication['key']] = key
+        resource = configuration.services.provide_by_login_key.call(key_value)
+        traits[configuration.login_event.dig('authentication', 'name')] = key_value
 
         env['castle'].identify(
-          resource&.public_send(configuration.user_id_method),
+          resource&.public_send(configuration.login_event['user_id_method']),
           traits
         )
 
@@ -65,8 +71,8 @@ module Castle
           req.session['castle_user_id'] = env['castle'].user_id
           nil
         when 'challenge'
-          redirect_result = configuration.challenge.call(req, resource)
-          configuration.logout.call(req, env)
+          redirect_result = configuration.services.challenge.call(req, resource)
+          configuration.services.logout.call(req, env)
           redirect_result
         when 'deny'
           redirect_result = configuration.services.deny.call(req, resource)
@@ -85,8 +91,8 @@ module Castle
         )
       end
 
-      def track_login_failed(req, env, _mapping, _event_properties)
-        track.call(
+      def track_login_failed(req, env)
+        track(
           ::Castle::Client.to_context(req),
           ::Castle::Client.to_options(
             user_id: env['castle'].user_id,
@@ -96,11 +102,13 @@ module Castle
       end
 
       def login?(req)
-        req.path == configuration.login_event['path'] && req.request_method == configuration.login_event['method'] && req.form_data?
+        mapping = @mapper.find_by_prerack_request(req)
+        !mapping.nil?
       end
 
-      def login_success?(app_result)
-        app_result[0] = configuration.login_event['success_status']
+      def login_success?(app_result, req)
+        mapping = @mapper.find_by_rack_request(app_result, req)
+        !mapping.nil?
       end
     end
   end

@@ -35,6 +35,13 @@ module Castle
         @mappings.detect { |mapping| self.class.match?(mapping, conditions) }
       end
 
+      def find_by_prerack_request(request)
+        find(
+          method: request.request_method,
+          path: request.path
+        )
+      end
+
       def find_by_rack_request(result, request)
         find(
           status: result.first, # Rack status code
@@ -48,8 +55,6 @@ module Castle
       end
 
       def self.build(config)
-        raise ArgumentError, 'Invalid format' unless config.is_a?(::Hash)
-
         config.each_with_object(new) do |(event, conditions), mapping|
           conditions = [conditions] unless conditions.is_a?(::Array)
           conditions.each { |c| mapping.add(event, c) }
@@ -58,11 +63,18 @@ module Castle
 
       def self.match?(mapping, conditions)
         status, mtd, path = conditions.values_at(:status, :method, :path)
-        return false if [status, mtd, path].include?(nil)
 
-        mapping.status.match(status.to_s) &&
-          mapping.method.match(mtd.to_s) &&
-          mapping.path.match(path.to_s)
+        return false if path.nil?
+
+        match_prop?(mapping.status, status) &&
+          match_prop?(mapping.method, mtd) &&
+          match_prop?(mapping.path, path)
+      end
+
+
+      def self.match_prop?(prop_value, condition)
+        return true if condition.nil?
+        prop_value.match(condition.to_s)
       end
     end
   end

@@ -14,8 +14,7 @@ module Castle
       def call(env)
         return unless @can_append_nonce
 
-        nonce = ::SecureHeaders.content_security_policy_script_nonce(::Rack::Request.new(env))
-        " nonce=\"#{nonce}\""
+        ::SecureHeaders.content_security_policy_script_nonce(::Rack::Request.new(env))
       end
     end
   end

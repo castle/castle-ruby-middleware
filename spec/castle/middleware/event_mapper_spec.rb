@@ -36,12 +36,6 @@ describe Castle::Middleware::EventMapper do
 
       it { expect(builder).to be_an_instance_of(described_class) }
     end
-
-    context 'with invalid config' do
-      let(:config) { [] }
-
-      it { expect { builder }.to raise_error(ArgumentError) }
-    end
   end
 
   describe '#add' do

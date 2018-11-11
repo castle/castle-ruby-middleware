@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe Castle::Middleware::Configuration do
-  subject(:instance) { described_class.new(Castle::Middleware::ConfigurationOptions.new) }
+  subject(:instance) { described_class.new(Castle::Middleware::Configuration::Options.new) }
 
   describe '#events.size' do
     subject { instance.events.size }

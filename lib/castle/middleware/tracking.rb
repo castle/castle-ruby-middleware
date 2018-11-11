@@ -1,29 +1,32 @@
 # frozen_string_literal: true
 
 require 'castle/middleware/request_config'
+require 'castle/middleware/event_mapper'
+require 'castle/middleware/params_flattener'
 
 module Castle
   class Middleware
     class Tracking
       extend Forwardable
-      def_delegators :@middleware, :log, :configuration, :event_mapping
+      def_delegators :@middleware, :log, :configuration
 
       attr_reader :app
 
       def initialize(app)
         @app = app
         @middleware = Middleware.instance
+        @event_mapping = Castle::Middleware::EventMapper.build(configuration.events)
       end
 
       def call(env)
-        env['castle'] = RequestConfig.new
+        env['castle'] ||= RequestConfig.new
         req = Rack::Request.new(env)
 
         # [status, headers, body]
         app_result = app.call(env)
 
         # Find a matching event from the config
-        mapping = event_mapping.find_by_rack_request(app_result, req)
+        mapping = @event_mapping.find_by_rack_request(app_result, req)
 
         return app_result if mapping.nil?
 
@@ -53,10 +56,8 @@ module Castle
         event_properties
       end
 
-      private
-
       def track(req, env, mapping, event_properties)
-        configuration.transport.call(
+        configuration.services.transport.call(
           ::Castle::Client.to_context(req),
           ::Castle::Client.to_options(
             user_id: env['castle'].user_id,

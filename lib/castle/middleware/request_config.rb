@@ -12,6 +12,11 @@ module Castle
         @traits = traits
       end
 
+      def clear
+        @user_id = nil
+        @traits = nil
+      end
+
       def properties(props)
         @props = props
       end

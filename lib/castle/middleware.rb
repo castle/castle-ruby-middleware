@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
+require 'castle/middleware/errors'
 require 'castle/middleware/configuration'
-require 'castle/middleware/configuration_options'
-require 'castle/middleware/configuration_services'
-require 'castle/middleware/event_mapper'
-require 'castle/middleware/params_flattener'
+require 'castle/middleware/configuration/options'
+require 'castle/middleware/configuration/services'
+require 'castle/middleware/configuration/validate'
 require 'castle/middleware/sensor'
 require 'castle/middleware/tracking'
 require 'castle/middleware/authenticating'
@@ -25,19 +25,20 @@ module Castle
     def configure
       raise ArgumentError unless block_given?
 
-      @configuration_options = ConfigurationOptions.new
+      @configuration_options = Configuration::Options.new
       yield(@configuration_options)
-      @event_mapping = nil
+      @configuration = nil
+      validate
+    end
+
+    def validate
+      Configuration::Validate.new.call(@configuration_options)
     end
 
     attr_writer :configuration
 
     def configuration
       @configuration ||= Configuration.new(@configuration_options)
-    end
-
-    def event_mapping
-      @event_mapping ||= EventMapper.build(configuration.events)
     end
 
     def log(level, message)

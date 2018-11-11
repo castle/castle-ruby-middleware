@@ -36,13 +36,13 @@ describe Castle::Middleware::Tracking do
 
     let(:service) {  described_class.new(app) }
     let(:transport) { spy }
+    let(:event_mapping) { spy }
 
     before do
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:transport).and_return(transport)
+      allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
+      allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping)
       allow(service).to receive(:collect_event_properties).and_return({})
-      allow(::Castle::Middleware.instance.configuration).to receive(:transport).and_return(transport)
-      allow(
-        ::Castle::Middleware.instance.event_mapping
-      ).to receive(:find_by_rack_request).and_return(mapping)
     end
 
     context 'when a mapping exists' do

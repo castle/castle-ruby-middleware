@@ -7,19 +7,6 @@ describe Castle::Middleware do
     it { expect(config.api_secret).to be_eql('secret') }
   end
 
-  context '.event_mapping' do
-    subject { described_class.instance.event_mapping.events }
-    context 'when configured' do
-      before do
-        described_class.instance.configuration.options.events = {
-          '$login.failed' => { status: 400, path: '/', method: 'POST' }
-        }
-      end
-
-      it { is_expected.to include '$login.failed' }
-    end
-  end
-
   describe '::configure' do
     let(:configuration) { described_class.instance.configuration }
 
@@ -27,8 +14,8 @@ describe Castle::Middleware do
       it { expect { described_class.configure }.to raise_error(ArgumentError) }
     end
 
-    context 'with block' do
-      it { expect { |b| described_class.configure(&b) }.to yield_with_args(anything) }
+    context 'with empty block' do
+      it { expect { described_class.configure { |c| } }.to raise_error(Castle::Middleware::ConfigError) }
     end
   end
 
