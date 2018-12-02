@@ -13,7 +13,7 @@ module Castle
           file_path
           logger
           events
-          login_event
+          identify
         ].each do |opt|
           attr_accessor opt
         end
@@ -23,7 +23,7 @@ module Castle
         def initialize
           @events = {}
           @security_headers = false
-          @login_event = {}
+          @identify = {}
           @services = ::Castle::Middleware::Configuration::Services.new
         end
       end

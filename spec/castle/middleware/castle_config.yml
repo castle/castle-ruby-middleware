@@ -1,13 +1,19 @@
 ---
-login:
-  method: POST
-  path: "/login"
-  user_id: uuid
-  status: '301'
-  authentication:
-    key: 'user.email'
-    password: 'user.password'
+identify:
+  id: uuid
+  traits:
+    email: email
+    name: full_name
 events:
+  $login.succeeded:
+    authenticate: true
+    challenge: true
+    method: POST
+    path: "/login"
+    status: '302'
+    properties:
+      email: 'user.email'
+      password: 'user.password'
   $login.failed:
     status: '302'
     method: POST

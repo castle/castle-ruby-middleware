@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    castle-middleware (0.0.9)
+    castle-middleware (1.0.0)
       castle-rb (< 4.0)
 
 GEM
@@ -53,4 +53,4 @@ DEPENDENCIES
   rspec
 
 BUNDLED WITH
-   1.16.6
+   1.17.1

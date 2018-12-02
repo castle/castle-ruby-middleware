@@ -32,7 +32,7 @@ By default the middleware will insert [Castle.js](https://castle.io/docs/trackin
 ### Mapping events
 
 To start tracking events to Castle, you need to setup which routes should be mapped to
-which Castle [security event](https://castle.io/docs/events).
+which Castle [security event](https://castle.io/docs/events). For authenticate endpoint use `authenticate: true` flag. for specifying referer use `referer` prop.
 
 ```yaml
 # config/castle.yml
@@ -45,6 +45,8 @@ events:
     properties:
       email: 'session.email' # Send user email extracted from params['session']['email']
   $login.succeeded: # Remember to register the current user, see below
+    authenticate: true
+    referer: /login
     path: /session
     method: POST
     status: 302
@@ -70,6 +72,12 @@ In some cases you might have multiple paths that should track the same event. Eg
 
 ```yaml
 events:
+  $login.succeeded:
+    status: '302'
+    method: POST
+    path: "/users/sign_in"
+    properties:
+      email: user.email
   $login.failed:
     - path: /session
       method: POST
@@ -91,40 +99,40 @@ If you're using [Devise](https://github.com/plataformatec/devise) as authenticat
 
 ### Identifying the logged in user
 
-Call `identify` on the `env['castle']` object to register the currently logged in user. This call will not issue an API request, but instead piggyback the information on the next server-side event.
+Add `identify` config to configuration file. It should consist of nad id and user traits. Additionally you need to provide service in configuration where you provide user resource instance from a request data
 
-```ruby
-class ApplicationController < ActionController::Base
-  before_action do
-    if current_user
-      env['castle'].identify(current_user.id, {
-        created_at: current_user.created_at,
-        email: current_user.email,
-        name: current_user.name
-      })
-    end
-  end
+```yaml
 
-  # ...
-end
+identify:
+  id: uuid
+  traits:
+    email: email
+    name: full_name
+ 
 ```
-
-## Configuration
-
-### Manually inserting middleware in Rails
 
 ```ruby
 Castle::Middleware.configure do |config|
-  config.auto_insert_middleware = false
+  config.services.provide_user do |request|
+    #User.find_by(id: request.session[:user_id])
+    #provide user resource object from the request
+  end
 end
-```
+
+## Configuration
+
+### inserting middleware in Rails
+
+require 'castle/middleware/railties' # in you application.rb file or manually add in config/application.rb
 
 ```ruby
 # config/application.rb
-app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if needed
-                                   Castle::Middleware::Tracking
-app.config.middleware.insert_after ActionDispatch::Flash, # Replace this if needed
-                                   Castle::Middleware::Sensor
+app.config.middleware.insert_after ActionDispatch::Flash,
+                                    Castle::Middleware::Sensor
+app.config.middleware.insert_after ActionDispatch::Flash,
+                                    Castle::Middleware::Tracking
+app.config.middleware.insert_after ActionDispatch::Flash,
+                                    Castle::Middleware::Authenticating
 ```
 
 

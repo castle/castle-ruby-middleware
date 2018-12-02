@@ -10,8 +10,9 @@ module Castle
       extend Forwardable
       attr_reader :options
       def_delegators :@options,
-                     :logger, :transport, :api_secret, :app_id, :tracker_url, :services,
-                     :events, :login_event, :security_headers
+                     :logger, :transport, :api_secret, :app_id,
+                     :tracker_url, :services,
+                     :events, :identify, :security_headers
       def_delegators :@middleware, :log, :track
 
       def initialize(options = nil)
@@ -33,7 +34,7 @@ module Castle
       def load_config_file
         file_config = YAML.load_file(options.file_path)
         options.events = (options.events || {}).merge(file_config['events'] || {})
-        options.login_event = (options.login_event || {}).merge(file_config['login_event'] || {})
+        options.identify = (options.identify || {}).merge(file_config['identify'] || {})
       rescue Errno::ENOENT => e
         log(:error, '[Castle] No config file found')
       rescue Psych::SyntaxError

@@ -46,25 +46,19 @@ describe Castle::Middleware::EventMapper do
 
       it { expect { instance.add(*arguments) }.to change(instance, :size).by 1 }
     end
-
-    context 'with invalid arguments' do
-      let(:arguments) { ['$login.failed', nil] }
-
-      it { expect { instance.add(*arguments) }.to raise_error(ArgumentError) }
-    end
   end
 
   describe '#find single config' do
     subject { described_class.build(valid_config).find(conditions) }
 
     context 'with matching conditions' do
-      let(:conditions) { { status: 302, path: '/sign_in', method: 'POST' } }
+      let(:conditions) { { status: 302, path: '/sign_in', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_an_instance_of(described_class::Object) }
     end
 
     context 'without matching conditions' do
-      let(:conditions) { { status: 400, path: '/sign_in', method: 'POST' } }
+      let(:conditions) { { status: 400, path: '/sign_in', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_nil }
     end
@@ -78,13 +72,13 @@ describe Castle::Middleware::EventMapper do
     end
 
     context 'and with matching conditions' do
-      let(:conditions) { { status: 400, path: '/users/1234', method: 'POST' } }
+      let(:conditions) { { status: 400, path: '/users/1234', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_an_instance_of(described_class::Object) }
     end
 
     context 'and without matching conditions' do
-      let(:conditions) { { status: 400, path: '/users/1234/account', method: 'POST' } }
+      let(:conditions) { { status: 400, path: '/users/1234/account', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_nil }
     end
@@ -94,18 +88,18 @@ describe Castle::Middleware::EventMapper do
     subject { described_class.build(array_config).find(conditions) }
 
     context 'when matching first item' do
-      let(:conditions) { { status: 302, path: '/sign_in', method: 'POST' } }
+      let(:conditions) { { status: 302, path: '/sign_in', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_an_instance_of(described_class::Object) }
     end
     context 'when matching second item' do
-      let(:conditions) { { status: 400, path: '/login', method: 'POST' } }
+      let(:conditions) { { status: 400, path: '/login', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_an_instance_of(described_class::Object) }
     end
 
     context 'when no match' do
-      let(:conditions) { { status: 400, path: '/logout', method: 'POST' } }
+      let(:conditions) { { status: 400, path: '/logout', method: 'POST', authenticate: false } }
 
       it { is_expected.to be_nil }
     end

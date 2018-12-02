@@ -11,10 +11,10 @@ module Castle
                             !::SecureHeaders::Configuration.get.current_csp[:script_src].to_a.include?("'unsafe-inline'")
       end
 
-      def call(env)
+      def call(req)
         return unless @can_append_nonce
 
-        ::SecureHeaders.content_security_policy_script_nonce(::Rack::Request.new(env))
+        ::SecureHeaders.content_security_policy_script_nonce(req)
       end
     end
   end

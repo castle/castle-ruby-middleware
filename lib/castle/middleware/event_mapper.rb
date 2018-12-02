@@ -4,7 +4,9 @@ module Castle
   class Middleware
     # Map a request path to a Castle event name
     class EventMapper
-      Object = Struct.new(:event, :method, :path, :status, :properties)
+      Object = Struct.new(:event, :method, :path,
+                          :status, :properties, :authenticate,
+                          :challenge, :referer)
 
       attr_accessor :mappings
 
@@ -13,8 +15,6 @@ module Castle
       end
 
       def add(event, conditions)
-        raise ArgumentError unless conditions.is_a?(::Hash)
-
         conditions = conditions.each_with_object({}) do |(k, v), hash|
           hash[k.to_sym] = v || ''
         end
@@ -23,7 +23,10 @@ module Castle
           conditions[:method].to_s,
           conditions[:path],
           conditions[:status].to_s,
-          conditions[:properties] || {}
+          conditions.fetch(:properties, {}),
+          conditions.fetch(:authenticate, false),
+          conditions.fetch(:challenge, false),
+          conditions[:referer]
         )
       end
 
@@ -35,18 +38,13 @@ module Castle
         @mappings.detect { |mapping| self.class.match?(mapping, conditions) }
       end
 
-      def find_by_prerack_request(request)
-        find(
-          method: request.request_method,
-          path: request.path
-        )
-      end
-
-      def find_by_rack_request(result, request)
+      def find_by_rack_request(result, request, authenticate = false)
         find(
           status: result.first, # Rack status code
           method: request.request_method,
-          path: request.path
+          path: request.path,
+          authenticate: authenticate,
+          referer: request.referer.to_s
         )
       end
 
@@ -62,18 +60,22 @@ module Castle
       end
 
       def self.match?(mapping, conditions)
-        status, mtd, path = conditions.values_at(:status, :method, :path)
+        status, mtd, path, auth, referer = conditions.values_at(
+          :status, :method, :path, :authenticate, :referer
+        )
 
         return false if path.nil?
 
         match_prop?(mapping.status, status) &&
           match_prop?(mapping.method, mtd) &&
+          (mapping.authenticate == auth) &&
+          (mapping.referer.nil? || referer.include?(mapping.referer)) &&
           match_prop?(mapping.path, path)
       end
 
-
       def self.match_prop?(prop_value, condition)
         return true if condition.nil?
+
         prop_value.match(condition.to_s)
       end
     end

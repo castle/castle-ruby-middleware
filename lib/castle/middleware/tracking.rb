@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'castle/middleware/request_config'
 require 'castle/middleware/event_mapper'
-require 'castle/middleware/params_flattener'
+require 'castle/middleware/properties_provide'
+require 'castle/middleware/identification'
 
 module Castle
   class Middleware
@@ -19,51 +19,40 @@ module Castle
       end
 
       def call(env)
-        env['castle'] ||= RequestConfig.new
         req = Rack::Request.new(env)
 
         # [status, headers, body]
         app_result = app.call(env)
 
-        # Find a matching event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result, req)
+        # Find a matching track event from the config
+        mapping = @event_mapping.find_by_rack_request(app_result, req, false)
 
         return app_result if mapping.nil?
 
-        event_properties = collect_event_properties(
-          req.params, mapping.properties
-        ).merge(env['castle'].props || {})
+        resource = configuration.services.provide_user.call(req)
+
+        return app_result if resource.nil?
+
+        # get event properties from params
+        event_properties = PropertiesProvide.call(req.params, mapping.properties)
 
         # Send track request as configured
-        track(req, env, mapping, event_properties)
+        process_track(req, resource, mapping, event_properties)
 
         app_result
       end
 
-      def collect_event_properties(request_params, properties_map)
-        flat_params = ParamsFlattener.call(request_params)
+      private
 
-        event_properties = properties_map.each_with_object({}) do |(property, param), hash|
-          hash[property] = flat_params[param]
-        end
-
-        # Convert password to a boolean
-        # TODO: Check agains list of known password field names
-        if event_properties.key?(:password)
-          event_properties[:password] = !event_properties[:password].to_s.empty?
-        end
-
-        event_properties
-      end
-
-      def track(req, env, mapping, event_properties)
+      # generate track call
+      def process_track(req, resource, mapping, properties)
         configuration.services.transport.call(
           ::Castle::Client.to_context(req),
           ::Castle::Client.to_options(
-            user_id: env['castle'].user_id,
-            user_traits: env['castle'].traits,
+            user_id: Identification.id(resource, configuration.identify),
+            user_traits: Identification.traits(resource, configuration.identify),
             event: mapping.event,
-            properties: event_properties
+            properties: properties
           )
         )
       end

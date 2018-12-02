@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Castle::Middleware::Tracking do
+describe Castle::Middleware::Authenticating do
   let(:app) { double }
   let(:env) { {} }
   let(:response) { [200, {}, ''] }
@@ -35,13 +35,13 @@ describe Castle::Middleware::Tracking do
     subject(:call) { service.call(env) }
 
     let(:service) {  described_class.new(app) }
-    let(:transport) { spy }
+    let(:authenticate) { spy }
     let(:event_mapping) { spy }
     let(:properties_provide) { {} }
     let(:user) { spy }
 
     before do
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:transport).and_return(transport)
+      allow(::Castle::Middleware.instance).to receive(:authenticate).and_return(authenticate)
       allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(user)
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
       allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping)
@@ -53,11 +53,11 @@ describe Castle::Middleware::Tracking do
 
       before do
         allow(mapping).to receive(:properties).and_return({})
-        allow(mapping).to receive(:event).and_return('$logout.succeeded')
+        allow(mapping).to receive(:event).and_return('$login.succeeded')
         call
       end
 
-      it { expect(transport).to have_received(:call).once }
+      it { expect(::Castle::Middleware.instance).to have_received(:authenticate).once }
     end
 
     context 'when a mapping does not exists' do
@@ -65,7 +65,7 @@ describe Castle::Middleware::Tracking do
 
       before { call }
 
-      it { expect(transport).not_to have_received(:call) }
+      it { expect(::Castle::Middleware.instance).not_to have_received(:authenticate) }
     end
   end
 end

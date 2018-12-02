@@ -17,7 +17,7 @@ describe Castle::Middleware::Configuration do
     context 'when existing config file is loaded' do
       let(:path) { './castle_config.yml' }
 
-      it { is_expected.to be_eql 2 }
+      it { is_expected.to be_eql 3 }
     end
 
     context 'when non-existing config is loaded' do
@@ -28,7 +28,7 @@ describe Castle::Middleware::Configuration do
   end
 
   describe '#events.path' do
-    subject { instance.events.values.first['path'] }
+    subject { instance.events.values[1]['path'] }
 
     before do
       allow(instance.options).to receive(:file_path) do
