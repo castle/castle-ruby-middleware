@@ -48,18 +48,18 @@ module Castle
     end
 
     def track(context, options)
-      log(:debug, "[Castle] Tracking #{options[:event]}")
-      ::Castle::Client.new(context).track(options)
-    rescue Castle::Error => e
-      log(:warn, "[Castle] Can't send tracking request because #{e} exception")
-      call_error_handler(e)
+      do_request(:track, context, options)
     end
 
     def authenticate(context, options)
-      log(:debug, "[Castle] Authenticating #{options[:event]}")
-      ::Castle::Client.new(context).authenticate(options)
+      do_request(:authenticate, context, options)
+    end
+
+    def do_request(meth, context, options)
+      log(:debug, "[Castle] #{meth} #{options[:event]}")
+      ::Castle::Client.new(context).public_send(meth, options)
     rescue Castle::Error => e
-      log(:warn, "[Castle] Can't send authenticating request because #{e} exception")
+      log(:warn, "[Castle] Can't send #{meth} request because #{e} exception")
       call_error_handler(e)
     end
 

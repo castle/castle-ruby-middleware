@@ -19,10 +19,10 @@ module Castle
       end
 
       def call(env)
-        req = Rack::Request.new(env)
-
         # [status, headers, body]
         app_result = app.call(env)
+
+        req = Rack::Request.new(env)
 
         # Find a matching event from the config
         mapping = @event_mapping.find_by_rack_request(app_result[0], req, true)
@@ -50,18 +50,8 @@ module Castle
 
       def authentication_verdict(verdict, req, resource)
         case verdict[:action]
-        when 'challenge'
-          return unless configuration.services.challenge
-
-          redirect_result = configuration.services.challenge.call(req, resource)
-          configuration.services.logout.call(req)
-          redirect_result
-        when 'deny'
-          return unless configuration.services.deny
-
-          redirect_result = configuration.services.deny.call(req, resource)
-          configuration.services.logout.call(req)
-          redirect_result
+        when 'challenge' then challenge(req, resource)
+        when 'deny' then deny(req, resource)
         end
       end
 
@@ -75,6 +65,22 @@ module Castle
             properties: event_properties
           )
         )
+      end
+
+      def challenge(req, resource)
+        return unless configuration.services.challenge
+
+        redirect_result = configuration.services.challenge.call(req, resource)
+        configuration.services.logout.call(req)
+        redirect_result
+      end
+
+      def deny(req, resource)
+        return unless configuration.services.deny
+
+        redirect_result = configuration.services.deny.call(req, resource)
+        configuration.services.logout.call(req)
+        redirect_result
       end
     end
   end
