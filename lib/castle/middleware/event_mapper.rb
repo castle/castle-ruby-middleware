@@ -4,9 +4,9 @@ module Castle
   class Middleware
     # Map a request path to a Castle event name
     class EventMapper
-      Object = Struct.new(:event, :method, :path,
-                          :status, :properties, :authenticate,
-                          :challenge, :referer)
+      Mapping = Struct.new(:event, :method, :path,
+                           :status, :properties, :authenticate,
+                           :challenge, :referer, :quitting)
 
       attr_accessor :mappings
 
@@ -18,7 +18,7 @@ module Castle
         conditions = conditions.each_with_object({}) do |(k, v), hash|
           hash[k.to_sym] = v || ''
         end
-        @mappings << Object.new(
+        @mappings << Mapping.new(
           event.to_s,
           conditions[:method].to_s,
           conditions[:path],
@@ -26,7 +26,8 @@ module Castle
           conditions.fetch(:properties, {}),
           conditions.fetch(:authenticate, false),
           conditions.fetch(:challenge, false),
-          conditions[:referer]
+          conditions[:referer],
+          conditions.fetch(:quitting, false)
         )
       end
 
@@ -38,9 +39,9 @@ module Castle
         @mappings.detect { |mapping| self.class.match?(mapping, conditions) }
       end
 
-      def find_by_rack_request(result, request, authenticate = false)
+      def find_by_rack_request(status, request, authenticate = false)
         find(
-          status: result.first, # Rack status code
+          status: status, # Rack status code
           method: request.request_method,
           path: request.path,
           authenticate: authenticate,

@@ -54,7 +54,7 @@ describe Castle::Middleware::EventMapper do
     context 'with matching conditions' do
       let(:conditions) { { status: 302, path: '/sign_in', method: 'POST', authenticate: false } }
 
-      it { is_expected.to be_an_instance_of(described_class::Object) }
+      it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
 
     context 'without matching conditions' do
@@ -74,7 +74,7 @@ describe Castle::Middleware::EventMapper do
     context 'and with matching conditions' do
       let(:conditions) { { status: 400, path: '/users/1234', method: 'POST', authenticate: false } }
 
-      it { is_expected.to be_an_instance_of(described_class::Object) }
+      it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
 
     context 'and without matching conditions' do
@@ -90,12 +90,12 @@ describe Castle::Middleware::EventMapper do
     context 'when matching first item' do
       let(:conditions) { { status: 302, path: '/sign_in', method: 'POST', authenticate: false } }
 
-      it { is_expected.to be_an_instance_of(described_class::Object) }
+      it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
     context 'when matching second item' do
       let(:conditions) { { status: 400, path: '/login', method: 'POST', authenticate: false } }
 
-      it { is_expected.to be_an_instance_of(described_class::Object) }
+      it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
 
     context 'when no match' do

@@ -25,7 +25,7 @@ module Castle
         app_result = app.call(env)
 
         # Find a matching event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result, req, true)
+        mapping = @event_mapping.find_by_rack_request(app_result[0], req, true)
 
         return app_result if mapping.nil?
 

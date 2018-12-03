@@ -50,6 +50,11 @@ events:
     path: /session
     method: POST
     status: 302
+  $logout.succeeded: # Remember to register the current user, see below
+    path: /logout
+    method: GET
+    quitting: true # informing that we can lost a session here
+    status: 302
   $password_change.succeeded:
     path: !ruby/regexp '\/users\/\d+\/account'
     method: POST
@@ -108,7 +113,6 @@ identify:
   traits:
     email: email
     name: full_name
- 
 ```
 
 ```ruby
@@ -175,5 +179,3 @@ end
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
-
