@@ -40,7 +40,13 @@ module Castle
 
         if mapping.challenge
           redirect_result = authentication_verdict(verdict, req, resource)
-          return [301, { 'Location' => redirect_result }, []] if redirect_result
+          if redirect_result
+            return [301, {
+              'Location' => redirect_result,
+              'Content-Type' => 'text/html',
+              'Content-Length' => '0'
+            }, []]
+          end
         end
 
         app_result
@@ -70,17 +76,13 @@ module Castle
       def challenge(req, resource)
         return unless configuration.services.challenge
 
-        redirect_result = configuration.services.challenge.call(req, resource)
-        configuration.services.logout.call(req)
-        redirect_result
+        configuration.services.challenge.call(req, resource)
       end
 
       def deny(req, resource)
         return unless configuration.services.deny
 
-        redirect_result = configuration.services.deny.call(req, resource)
-        configuration.services.logout.call(req)
-        redirect_result
+        configuration.services.deny.call(req, resource)
       end
     end
   end

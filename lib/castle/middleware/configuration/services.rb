@@ -10,7 +10,6 @@ module Castle
           transport
           deny
           challenge
-          logout
           provide_user
         ].each do |opt|
           attr_accessor opt
