@@ -9,7 +9,7 @@ module Castle
       extend Forwardable
       def_delegators :@middleware, :log, :configuration
 
-      CJS_PATH = 'https://d2t77mnxyo7adj.cloudfront.net/v1/c.js'
+      CJS_PATH = 'https://d2t77mnxyo7adj.cloudfront.net/v1/c.js'.freeze
 
       def initialize
         @middleware = Middleware.instance
