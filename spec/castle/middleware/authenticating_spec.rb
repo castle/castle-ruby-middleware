@@ -42,7 +42,7 @@ describe Castle::Middleware::Authenticating do
 
     before do
       allow(::Castle::Middleware.instance).to receive(:authenticate).and_return(authenticate)
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(user)
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(lambda{ |_| user })
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
       allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping)
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
@@ -63,6 +63,15 @@ describe Castle::Middleware::Authenticating do
 
     context 'when a mapping does not exists' do
       let(:mapping) { nil }
+
+      before { call }
+
+      it { expect(::Castle::Middleware.instance).not_to have_received(:authenticate) }
+    end
+
+    context 'when user is nil' do
+      let(:user) { nil }
+      let(:mapping) { spy }
 
       before { call }
 

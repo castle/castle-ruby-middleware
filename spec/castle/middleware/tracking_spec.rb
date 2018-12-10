@@ -42,7 +42,7 @@ describe Castle::Middleware::Tracking do
 
     before do
       allow(::Castle::Middleware.instance.configuration.services).to receive(:transport).and_return(transport)
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(user)
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return( lambda { |_| user })
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
       allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping)
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
@@ -55,6 +55,19 @@ describe Castle::Middleware::Tracking do
         allow(mapping).to receive(:properties).and_return({})
         allow(mapping).to receive(:event).and_return('$logout.succeeded')
         allow(user).to receive(:created_at).and_return(Time.now)
+        call
+      end
+
+      it { expect(transport).to have_received(:call).once }
+    end
+
+    context 'when user is nil' do
+      let(:mapping) { spy }
+      let(:user) { nil }
+
+      before do
+        allow(mapping).to receive(:properties).and_return({})
+        allow(mapping).to receive(:event).and_return('$logout.succeeded')
         call
       end
 

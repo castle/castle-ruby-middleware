@@ -39,8 +39,6 @@ module Castle
 
         resource ||= configuration.services.provide_user.call(req)
 
-        return app_result if resource.nil?
-
         # get event properties from params
         event_properties = PropertiesProvide.call(req.params, mapping.properties)
 

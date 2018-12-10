@@ -7,7 +7,6 @@ describe Castle::Middleware::Sensor do
   let(:body) { ['<html><head></head></html>'] }
   let(:headers) { { 'Content-Type' => 'text/html' } }
   let(:user) { spy }
-  let(:provide_user_proc) { spy }
 
   before do
     # Fake Rack Response
@@ -50,7 +49,7 @@ describe Castle::Middleware::Sensor do
       end
     end
 
-    allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { provide_user_proc }
+    allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { lambda{ |r| user } }
     allow(::Castle::Middleware.instance.configuration).to receive(:api_secret) { 'secret' }
     allow(app).to receive(:call).and_return(response)
   end
@@ -78,10 +77,7 @@ describe Castle::Middleware::Sensor do
 
     context 'with HTML body' do
       let(:status) { 200 }
-
-      before do
-        allow(provide_user_proc).to receive(:call).and_return(nil)
-      end
+      let(:user) { nil }
 
       it { is_expected.to inject_the_script }
     end
@@ -89,10 +85,7 @@ describe Castle::Middleware::Sensor do
     context 'with non 200 code' do
       let(:status) { 400 }
       let(:body) { [''] }
-
-      before do
-        allow(provide_user_proc).to receive(:call).and_return(nil)
-      end
+      let(:user) { nil }
 
       it { is_expected.to_not inject_the_script }
     end
@@ -102,7 +95,6 @@ describe Castle::Middleware::Sensor do
 
       before do
         allow(user).to receive(:id).with('1')
-        allow(provide_user_proc).to receive(:call).and_return(user)
       end
 
       it { is_expected.to inject_the_identify_tag }
