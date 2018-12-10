@@ -7,12 +7,6 @@ require 'castle/middleware/identification'
 module Castle
   class Middleware
     class Tracking
-      class AlwaysMatch
-        def match(_)
-          true
-        end
-      end
-
       extend Forwardable
       def_delegators :@middleware, :log, :configuration
 
@@ -51,7 +45,7 @@ module Castle
       private
 
       def prefetch_resource_if_needed(req)
-        early_mapping = @event_mapping.find_by_rack_request(AlwaysMatch.new, req, false)
+        early_mapping = @event_mapping.find_by_rack_request(/\d+/, req, false)
 
         configuration.services.provide_user.call(req) if early_mapping && early_mapping.quitting
       end

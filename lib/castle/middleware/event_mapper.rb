@@ -77,7 +77,7 @@ module Castle
       def self.match_prop?(prop_value, condition)
         return true if condition.nil?
 
-        prop_value.match(condition.to_s)
+        prop_value.match?(condition.to_s)
       end
     end
   end

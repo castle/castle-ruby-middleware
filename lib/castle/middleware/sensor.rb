@@ -12,8 +12,6 @@ module Castle
 
       attr_reader :app
 
-      CJS_PATH = 'https://d2t77mnxyo7adj.cloudfront.net/v1/c.js'.freeze
-
       def initialize(app)
         @app = app
         @middleware = Middleware.instance
