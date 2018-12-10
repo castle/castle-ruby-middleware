@@ -110,6 +110,7 @@ Add `identify` config to configuration file. It should consist of nad id and use
 
 identify:
   id: uuid
+  created_at: created_at
   traits:
     email: email
     name: full_name

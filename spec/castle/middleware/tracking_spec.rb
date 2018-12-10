@@ -54,6 +54,7 @@ describe Castle::Middleware::Tracking do
       before do
         allow(mapping).to receive(:properties).and_return({})
         allow(mapping).to receive(:event).and_return('$logout.succeeded')
+        allow(user).to receive(:created_at).and_return(Time.now)
         call
       end
 

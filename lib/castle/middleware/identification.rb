@@ -5,13 +5,15 @@ module Castle
     class Identification
       class << self
         def id(resource, config)
-          resource.public_send(config['id']).to_s
+          resource.public_send(config.fetch('id')).to_s
         end
 
         def traits(resource, config)
-          config.fetch('traits', {}).each_with_object({}) do |(name, value), acc|
+          result = config.fetch('traits', {}).each_with_object({}) do |(name, value), acc|
             acc[name.to_sym] = resource.public_send(value)
           end
+          result[:created_at] = Time.parse(resource.public_send(config.fetch('created_at')).to_s).utc.iso8601(0)
+          result
         end
       end
     end

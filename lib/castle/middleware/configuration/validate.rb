@@ -10,6 +10,8 @@ module Castle
           validate_app_id(options)
           error(:events) unless options.events.is_a?(Hash)
           error(:identify) unless options.identify.is_a?(Hash)
+          error(:'identify/id') unless options.identify['id'].nil?
+          error(:'identify/created_at') unless options.identify['created_at'].nil?
         end
 
         private

@@ -21,11 +21,14 @@ describe Castle::Middleware::Identification do
       described_class.traits(user, ::Castle::Middleware.instance.configuration.identify)
     end
 
+    let(:time) { Time.parse('2018-12-10 10:00:00 UTC') }
+
     before do
       allow(user).to receive(:email).and_return('email')
+      allow(user).to receive(:created_at).and_return(time)
       allow(user).to receive(:full_name).and_return('full_name')
     end
 
-    it { is_expected.to eq(email: 'email', name: 'full_name') }
+    it { is_expected.to eq(email: 'email', name: 'full_name', created_at: '2018-12-10T10:00:00Z') }
   end
 end
