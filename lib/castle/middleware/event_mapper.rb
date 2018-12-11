@@ -4,7 +4,7 @@ module Castle
   class Middleware
     # Map a request path to a Castle event name
     class EventMapper
-      Mapping = Struct.new(:event, :method, :path,
+      Mapping = Struct.new(:event, :method, :path, :redirect_url,
                            :status, :properties, :authenticate,
                            :challenge, :referer, :quitting)
 
@@ -20,9 +20,10 @@ module Castle
         end
         @mappings << Mapping.new(
           event.to_s,
-          conditions[:method].to_s,
+          conditions[:method],
           conditions[:path],
-          conditions[:status].to_s,
+          conditions[:redirect_url],
+          conditions[:status],
           conditions.fetch(:properties, {}),
           conditions.fetch(:authenticate, false),
           conditions.fetch(:challenge, false),
@@ -36,16 +37,17 @@ module Castle
       end
 
       def find(conditions)
-        @mappings.detect { |mapping| self.class.match?(mapping, conditions) }
+        @mappings.select { |mapping| self.class.match?(mapping, conditions) }
       end
 
-      def find_by_rack_request(status, request, authenticate = false)
+      def find_by_rack_request(status, headers, request, authenticate = false)
         find(
           status: status, # Rack status code
           method: request.request_method,
           path: request.path,
           authenticate: authenticate,
-          referer: request.referer.to_s
+          referer: request.referer.to_s,
+          redirect_url: headers ? headers['Location'] : nil
         )
       end
 
@@ -61,23 +63,26 @@ module Castle
       end
 
       def self.match?(mapping, conditions)
-        status, mtd, path, auth, referer = conditions.values_at(
-          :status, :method, :path, :authenticate, :referer
+        status, mtd, path, auth, referer, redirect_url = conditions.values_at(
+          :status, :method, :path, :authenticate, :referer, :redirect_url
         )
 
         return false if path.nil?
 
         match_prop?(mapping.status, status) &&
           match_prop?(mapping.method, mtd) &&
+          match_prop?(mapping.redirect_url, redirect_url) &&
+          match_prop?(mapping.path, path) &&
           (mapping.authenticate == auth) &&
-          (mapping.referer.nil? || referer.include?(mapping.referer)) &&
-          match_prop?(mapping.path, path)
+          (mapping.referer.nil? || referer.include?(mapping.referer))
       end
 
       def self.match_prop?(prop_value, condition)
-        return true if condition.nil?
+        return true if condition.nil? || prop_value.nil?
 
-        prop_value.match?(condition.to_s)
+        prop_value = prop_value.to_s unless prop_value.is_a?(Regexp)
+
+        !prop_value.match(condition).nil?
       end
     end
   end

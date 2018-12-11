@@ -49,7 +49,7 @@ describe Castle::Middleware::Sensor do
       end
     end
 
-    allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { lambda{ |r| user } }
+    allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { lambda{ |_r, _s| user } }
     allow(::Castle::Middleware.instance.configuration).to receive(:api_secret) { 'secret' }
     allow(app).to receive(:call).and_return(response)
   end

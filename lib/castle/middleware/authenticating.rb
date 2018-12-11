@@ -25,11 +25,11 @@ module Castle
         req = Rack::Request.new(env)
 
         # Find a matching event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result[0], req, true)
+        mapping = @event_mapping.find_by_rack_request(app_result[0].to_s, app_result[1], req, true).first
 
         return app_result if mapping.nil?
 
-        resource = configuration.services.provide_user.call(req)
+        resource = configuration.services.provide_user.call(req, true)
 
         return app_result if resource.nil?
 

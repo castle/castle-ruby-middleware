@@ -25,6 +25,10 @@ describe Castle::Middleware::Tracking do
         def params
           {}
         end
+
+        def path
+          '/'
+        end
       end
     end
 
@@ -39,12 +43,14 @@ describe Castle::Middleware::Tracking do
     let(:event_mapping) { spy }
     let(:properties_provide) { {} }
     let(:user) { spy }
+    let(:mapping_arr) { [mapping] }
+
 
     before do
       allow(::Castle::Middleware.instance.configuration.services).to receive(:transport).and_return(transport)
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return( lambda { |_| user })
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return( lambda { |_r, _s| user })
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
-      allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping)
+      allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping_arr)
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
     end
 
@@ -75,7 +81,7 @@ describe Castle::Middleware::Tracking do
     end
 
     context 'when a mapping does not exists' do
-      let(:mapping) { nil }
+      let(:mapping_arr) { [] }
 
       before { call }
 

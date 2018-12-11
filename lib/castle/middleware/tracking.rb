@@ -27,17 +27,17 @@ module Castle
         app_result = app.call(env)
 
         # Find a matching track event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result[0], req, false)
+        mappings = @event_mapping.find_by_rack_request(app_result[0].to_s, app_result[1], req, false)
 
-        return app_result if mapping.nil?
+        mappings.each do |mapping|
+          resource ||= configuration.services.provide_user.call(req, true)
 
-        resource ||= configuration.services.provide_user.call(req)
+          # get event properties from params
+          event_properties = PropertiesProvide.call(req.params, mapping.properties)
 
-        # get event properties from params
-        event_properties = PropertiesProvide.call(req.params, mapping.properties)
-
-        # Send track request as configured
-        process_track(req, resource, mapping, event_properties)
+          # Send track request as configured
+          process_track(req, resource, mapping, event_properties)
+        end
 
         app_result
       end
@@ -45,9 +45,9 @@ module Castle
       private
 
       def prefetch_resource_if_needed(req)
-        early_mapping = @event_mapping.find_by_rack_request(/\d+/, req, false)
+        early_mapping = @event_mapping.find_by_rack_request(nil, nil, req, false).detect{|mapping| mapping.quitting }
 
-        configuration.services.provide_user.call(req) if early_mapping && early_mapping.quitting
+        configuration.services.provide_user.call(req, true) if early_mapping
       end
 
       # generate track call

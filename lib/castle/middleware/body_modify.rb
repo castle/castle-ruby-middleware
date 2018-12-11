@@ -54,7 +54,7 @@ module Castle
       end
 
       def js_commands(req)
-        resource = configuration.services.provide_user.call(req)
+        resource = configuration.services.provide_user.call(req, false)
         [
           "\n",
           tracker_url_command,

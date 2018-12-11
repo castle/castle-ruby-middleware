@@ -78,7 +78,7 @@ In some cases you might have multiple paths that should track the same event. Eg
 ```yaml
 events:
   $login.succeeded:
-    status: '302'
+    status: 302
     method: POST
     path: "/users/sign_in"
     properties:
@@ -118,9 +118,10 @@ identify:
 
 ```ruby
 Castle::Middleware.configure do |config|
-  config.services.provide_user do |request|
+  config.services.provide_user do |request, secure|
     #User.find_by(id: request.session[:user_id])
     #provide user resource object from the request
+    #if secure false data may be used in js
   end
 end
 
