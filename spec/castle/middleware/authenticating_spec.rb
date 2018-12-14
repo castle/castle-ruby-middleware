@@ -15,7 +15,7 @@ describe Castle::Middleware::Authenticating do
         end
 
         def path
-          "/"
+          '/'
         end
 
         def cookies
@@ -46,7 +46,7 @@ describe Castle::Middleware::Authenticating do
 
     before do
       allow(::Castle::Middleware.instance).to receive(:authenticate).and_return(authenticate)
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(lambda{ |_r, _s| user })
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(lambda { |_r, _s| user })
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
       allow(event_mapping).to receive(:find_by_rack_request).and_return([mapping])
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
@@ -58,7 +58,7 @@ describe Castle::Middleware::Authenticating do
       before do
         allow(mapping).to receive(:properties).and_return({})
         allow(mapping).to receive(:event).and_return('$login.succeeded')
-        allow(user).to receive(:created_at).and_return(Time.now)
+        allow(user).to receive(:created_at).and_return(Time.now.utc)
         call
       end
 

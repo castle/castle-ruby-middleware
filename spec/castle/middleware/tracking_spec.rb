@@ -15,7 +15,7 @@ describe Castle::Middleware::Tracking do
         end
 
         def path
-          "/"
+          '/'
         end
 
         def cookies
@@ -49,10 +49,9 @@ describe Castle::Middleware::Tracking do
     let(:user) { spy }
     let(:mapping_arr) { [mapping] }
 
-
     before do
       allow(::Castle::Middleware.instance.configuration.services).to receive(:transport).and_return(transport)
-      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return( lambda { |_r, _s| user })
+      allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user).and_return(lambda { |_r, _s| user })
       allow(::Castle::Middleware::EventMapper).to receive(:build).and_return(event_mapping)
       allow(event_mapping).to receive(:find_by_rack_request).and_return(mapping_arr)
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
@@ -64,7 +63,7 @@ describe Castle::Middleware::Tracking do
       before do
         allow(mapping).to receive(:properties).and_return({})
         allow(mapping).to receive(:event).and_return('$logout.succeeded')
-        allow(user).to receive(:created_at).and_return(Time.now)
+        allow(user).to receive(:created_at).and_return(Time.now.utc)
         call
       end
 

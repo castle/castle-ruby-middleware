@@ -2,7 +2,7 @@
 
 describe Castle::Middleware::ParamsFlattener do
   describe '::call' do
-    subject { described_class.(params) }
+    subject { described_class.call(params) }
 
     let(:formatted) { { 'user.address.city' => 'Svenborgia' } }
 

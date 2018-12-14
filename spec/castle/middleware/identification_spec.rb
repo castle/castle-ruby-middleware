@@ -30,7 +30,7 @@ describe Castle::Middleware::Identification do
     end
 
     context 'when user is defined' do
-      let(:time) { Time.parse('2018-12-10 10:00:00 UTC') }
+      let(:time) { Time.parse('2018-12-10 10:00:00 UTC').utc }
 
       before do
         allow(user).to receive(:email).and_return('email')

@@ -1,5 +1,6 @@
 Documentation:
   Enabled: false
+
 AllCops:
   TargetRubyVersion: 2.2
 
@@ -16,3 +17,6 @@ Metrics/BlockLength:
 
 Style/LambdaCall:
   Enabled: false
+
+Style/Lambda:
+  EnforcedStyle: lambda

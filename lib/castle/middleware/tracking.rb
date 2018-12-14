@@ -48,7 +48,7 @@ module Castle
       private
 
       def prefetch_resource_if_needed(req)
-        early_mapping = @event_mapping.find_by_rack_request(nil, req.path, nil, req, false).detect{|mapping| mapping.quitting }
+        early_mapping = @event_mapping.find_by_rack_request(nil, req.path, nil, req, false).detect(&:quitting)
 
         configuration.services.provide_user.call(req, true) if early_mapping
       end
