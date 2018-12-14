@@ -14,6 +14,10 @@ describe Castle::Middleware::Tracking do
           @env = env
         end
 
+        def path
+          "/"
+        end
+
         def cookies
           {}
         end

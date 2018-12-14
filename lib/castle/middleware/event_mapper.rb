@@ -40,11 +40,11 @@ module Castle
         @mappings.select { |mapping| self.class.match?(mapping, conditions) }
       end
 
-      def find_by_rack_request(status, headers, request, authenticate = false)
+      def find_by_rack_request(status, path, headers, request, authenticate = false)
         find(
           status: status, # Rack status code
           method: request.request_method,
-          path: request.path,
+          path: path,
           authenticate: authenticate,
           referer: request.referer.to_s,
           redirect_url: headers ? headers['Location'] : nil

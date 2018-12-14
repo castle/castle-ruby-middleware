@@ -23,11 +23,14 @@ module Castle
 
         resource = prefetch_resource_if_needed(req)
 
+        # preserve state of path
+        path = req.path
+
         # [status, headers, body]
         app_result = app.call(env)
 
         # Find a matching track event from the config
-        mappings = @event_mapping.find_by_rack_request(app_result[0].to_s, app_result[1], req, false)
+        mappings = @event_mapping.find_by_rack_request(app_result[0].to_s, path, app_result[1], req, false)
 
         mappings.each do |mapping|
           resource ||= configuration.services.provide_user.call(req, true)
@@ -45,7 +48,7 @@ module Castle
       private
 
       def prefetch_resource_if_needed(req)
-        early_mapping = @event_mapping.find_by_rack_request(nil, nil, req, false).detect{|mapping| mapping.quitting }
+        early_mapping = @event_mapping.find_by_rack_request(nil, req.path, nil, req, false).detect{|mapping| mapping.quitting }
 
         configuration.services.provide_user.call(req, true) if early_mapping
       end

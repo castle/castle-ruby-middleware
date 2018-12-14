@@ -19,13 +19,17 @@ module Castle
       end
 
       def call(env)
+        req = Rack::Request.new(env)
+
+        # preserve state of path
+        path = req.path
+
         # [status, headers, body]
         app_result = app.call(env)
 
-        req = Rack::Request.new(env)
 
         # Find a matching event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result[0].to_s, app_result[1], req, true).first
+        mapping = @event_mapping.find_by_rack_request(app_result[0].to_s, path, app_result[1], req, true).first
 
         return app_result if mapping.nil?
 

@@ -14,6 +14,10 @@ describe Castle::Middleware::Authenticating do
           @env = env
         end
 
+        def path
+          "/"
+        end
+
         def cookies
           {}
         end
