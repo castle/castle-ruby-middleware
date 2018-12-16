@@ -14,6 +14,7 @@ module Castle
           logger
           events
           identify
+          user_traits
         ].each do |opt|
           attr_accessor opt
         end
@@ -24,6 +25,7 @@ module Castle
           @events = {}
           @security_headers = false
           @identify = {}
+          @user_traits = {}
           @services = ::Castle::Middleware::Configuration::Services.new
         end
       end

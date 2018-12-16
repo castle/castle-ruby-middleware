@@ -1,10 +1,10 @@
 ---
 identify:
   id: id
-  created_at: created_at
-  traits:
-    email: email
-    name: name
+user_traits:
+  registered_at: created_at
+  email: email
+  name: name
 events:
   $login.failed:
     status: '200'

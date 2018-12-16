@@ -28,6 +28,7 @@ module Castle
       @configuration_options = Configuration::Options.new
       yield(@configuration_options)
       @configuration = nil
+      configuration
       validate
     end
 

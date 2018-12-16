@@ -59,7 +59,7 @@ module Castle
           ::Castle::Client.to_context(req),
           ::Castle::Client.to_options(
             user_id: Identification.id(resource, configuration.identify),
-            user_traits: Identification.traits(resource, configuration.identify),
+            user_traits: Identification.traits(resource, configuration.user_traits),
             event: mapping.event,
             properties: properties
           )

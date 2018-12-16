@@ -12,7 +12,7 @@ module Castle
       def_delegators :@options,
                      :logger, :transport, :api_secret, :app_id,
                      :tracker_url, :services,
-                     :events, :identify, :security_headers
+                     :events, :identify, :user_traits, :security_headers
       def_delegators :@middleware, :log, :track
 
       def initialize(options = nil)
@@ -35,6 +35,7 @@ module Castle
         file_config = YAML.load_file(options.file_path)
         options.events = (options.events || {}).merge(file_config['events'] || {})
         options.identify = (options.identify || {}).merge(file_config['identify'] || {})
+        options.user_traits = (options.user_traits || {}).merge(file_config['user_traits'] || {})
       rescue Errno::ENOENT => e
         log(:error, '[Castle] No config file found')
       rescue Psych::SyntaxError

@@ -1,10 +1,10 @@
 ---
 identify:
   id: uuid
-  created_at: created_at
-  traits:
-    email: email
-    name: full_name
+user_traits:
+  registered_at: created_at
+  email: email
+  name: full_name
 events:
   $login.succeeded:
     authenticate: true

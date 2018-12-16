@@ -104,16 +104,16 @@ If you're using [Devise](https://github.com/plataformatec/devise) as authenticat
 
 ### Identifying the logged in user
 
-Add `identify` config to configuration file. It should consist of nad id and user traits. Additionally you need to provide service in configuration where you provide user resource instance from a request data
+Add `identify` and `user_traits` config to configuration file. It should consist of and id and user traits. Additionally you need to provide service in configuration where you provide user resource instance from a request data
 
 ```yaml
 
 identify:
   id: uuid
-  created_at: created_at
-  traits:
-    email: email
-    name: full_name
+user_traits:
+  registered_at: created_at
+  email: email
+  name: full_name
 ```
 
 ```ruby

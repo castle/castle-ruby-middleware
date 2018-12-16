@@ -26,7 +26,7 @@ describe Castle::Middleware::Identification do
 
   describe '#traits' do
     subject do
-      described_class.traits(user, ::Castle::Middleware.instance.configuration.identify)
+      described_class.traits(user, ::Castle::Middleware.instance.configuration.user_traits)
     end
 
     context 'when user is defined' do
@@ -38,7 +38,7 @@ describe Castle::Middleware::Identification do
         allow(user).to receive(:full_name).and_return('full_name')
       end
 
-      it { is_expected.to eq(email: 'email', name: 'full_name', created_at: '2018-12-10T10:00:00Z') }
+      it { is_expected.to eq(email: 'email', name: 'full_name', registered_at: '2018-12-10T10:00:00Z') }
     end
 
     context 'when user is nil' do
