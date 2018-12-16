@@ -44,7 +44,7 @@ module Castle
         if mapping.challenge
           redirect_result = authentication_verdict(verdict, req, resource)
           if redirect_result
-            return [301, {
+            return [302, {
               'Location' => redirect_result,
               'Content-Type' => 'text/html',
               'Content-Length' => '0'
