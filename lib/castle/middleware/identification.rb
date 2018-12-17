@@ -5,7 +5,7 @@ module Castle
     class Identification
       class << self
         def id(resource, config)
-          return false if resource.nil?
+          return if resource.nil?
 
           resource.public_send(config.fetch('id')).to_s
         end

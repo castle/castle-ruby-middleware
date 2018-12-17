@@ -20,7 +20,7 @@ describe Castle::Middleware::Identification do
     context 'when user is nil' do
       let(:user) { nil }
 
-      it { is_expected.to eq(false) }
+      it { is_expected.to eq(nil) }
     end
   end
 
