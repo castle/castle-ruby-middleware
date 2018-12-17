@@ -17,7 +17,7 @@ events:
     status: '302'
     method: POST
     path: "/users/sign_in"
-    properties:
+    user_traits_from_params:
       email: user.email
   $logout.succeeded:
     status: '302'
@@ -27,11 +27,11 @@ events:
     status: !ruby/regexp /.*/
     method: POST
     path: "/users/password"
-    properties:
+    user_traits_from_params:
       email: user.email
   $password_reset.succeeded:
     status: '302'
     method: PUT
     path: "/users/password"
-    properties:
+    user_traits_from_params:
       email: user.email

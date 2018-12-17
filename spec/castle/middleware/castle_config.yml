@@ -12,14 +12,14 @@ events:
     method: POST
     path: "/login"
     status: '302'
-    properties:
+    user_traits_from_params:
       email: 'user.email'
       password: 'user.password'
   $login.failed:
     status: '302'
     method: POST
     path: !ruby/regexp '/\/sign_in\/new/i'
-    properties:
+    user_traits_from_params:
       email: user.email
   $logout.succeeded:
     status: '302'

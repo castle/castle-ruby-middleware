@@ -13,7 +13,7 @@ module Castle
             acc[property] = flat_params[param]
           end
 
-          password_fields = event_properties.keys.select{|key| key.to_s.include?('password') }
+          password_fields = event_properties.keys.select { |key| key.to_s.include?('password') }
 
           # Convert password to a boolean
           password_fields.each do |field_name|

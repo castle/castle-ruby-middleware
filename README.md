@@ -42,7 +42,7 @@ events:
     path: /session
     method: POST
     status: 401,
-    properties:
+    user_traits_from_params:
       email: 'session.email' # Send user email extracted from params['session']['email']
   $login.succeeded: # Remember to register the current user, see below
     authenticate: true
@@ -81,18 +81,18 @@ events:
     status: 302
     method: POST
     path: "/users/sign_in"
-    properties:
+    user_traits_from_params:
       email: user.email
   $login.failed:
     - path: /session
       method: POST
       status: 401
-      properties:
+      user_traits_from_params:
         email: 'session.email'
     - path: /other_session
       method: PUT
       status: 300
-      properties:
+      user_traits_from_params:
         email: 'session.email'
 ```
 

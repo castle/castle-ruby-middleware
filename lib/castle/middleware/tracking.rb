@@ -38,8 +38,11 @@ module Castle
           # get event properties from params
           event_properties = PropertiesProvide.call(req.params, mapping.properties)
 
+          # get user_traits_from_params from params
+          user_traits_from_params = PropertiesProvide.call(req.params, mapping.user_traits_from_params)
+
           # Send track request as configured
-          process_track(req, resource, mapping, event_properties)
+          process_track(req, resource, mapping, user_traits_from_params, event_properties)
         end
 
         app_result
@@ -54,12 +57,14 @@ module Castle
       end
 
       # generate track call
-      def process_track(req, resource, mapping, properties)
+      def process_track(req, resource, mapping, user_traits_from_params, properties)
         configuration.services.transport.call(
           ::Castle::Client.to_context(req),
           ::Castle::Client.to_options(
             user_id: Identification.id(resource, configuration.identify),
-            user_traits: Identification.traits(resource, configuration.user_traits),
+            user_traits: Identification.traits(
+              resource, configuration.user_traits
+            ).merge(user_traits_from_params),
             event: mapping.event,
             properties: properties
           )

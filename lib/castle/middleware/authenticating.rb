@@ -39,7 +39,10 @@ module Castle
         # get event properties from params
         event_properties = PropertiesProvide.call(req.params, mapping.properties)
 
-        verdict = process_authenticate(req, resource, mapping, event_properties)
+        # get user_traits from params
+        user_traits_from_params = PropertiesProvide.call(req.params, mapping.user_traits_from_params)
+
+        verdict = process_authenticate(req, resource, mapping, user_traits_from_params, event_properties)
 
         if mapping.challenge
           redirect_result = authentication_verdict(verdict, req, resource)
@@ -64,12 +67,14 @@ module Castle
         end
       end
 
-      def process_authenticate(req, resource, mapping, event_properties)
+      def process_authenticate(req, resource, mapping, user_traits_from_params, event_properties)
         authenticate(
           Castle::Client.to_context(req),
           Castle::Client.to_options(
             user_id: Identification.id(resource, configuration.identify),
-            user_traits: Identification.traits(resource, configuration.user_traits),
+            user_traits: Identification.traits(
+              resource, configuration.user_traits
+            ).merge(user_traits_from_params),
             event: mapping.event,
             properties: event_properties
           )

@@ -15,6 +15,7 @@ module Castle
 
           result = config.each_with_object({}) do |(name, value), acc|
             next if name.to_sym === :registered_at
+
             acc[name.to_sym] = resource.public_send(value)
           end
           result[:registered_at] = Time.parse(resource.public_send(config.fetch('registered_at')).to_s).utc.iso8601(0)

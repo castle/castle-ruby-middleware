@@ -5,7 +5,7 @@ module Castle
     # Map a request path to a Castle event name
     class EventMapper
       Mapping = Struct.new(:event, :method, :path, :redirect_url,
-                           :status, :properties, :authenticate,
+                           :status, :properties, :user_traits_from_params, :authenticate,
                            :challenge, :referer, :quitting)
 
       attr_accessor :mappings
@@ -25,6 +25,7 @@ module Castle
           conditions[:redirect_url],
           conditions[:status],
           conditions.fetch(:properties, {}),
+          conditions.fetch(:user_traits_from_params, {}),
           conditions.fetch(:authenticate, false),
           conditions.fetch(:challenge, false),
           conditions[:referer],
