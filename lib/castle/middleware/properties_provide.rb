@@ -13,10 +13,11 @@ module Castle
             acc[property] = flat_params[param]
           end
 
+          password_fields = event_properties.keys.select{|key| key.to_s.include?('password') }
+
           # Convert password to a boolean
-          # TODO: Check agains list of known password field names
-          if event_properties.key?(:password)
-            event_properties[:password] = !event_properties[:password].to_s.empty?
+          password_fields.each do |field_name|
+            event_properties[field_name] = !event_properties[field_name].to_s.empty?
           end
 
           event_properties
