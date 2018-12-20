@@ -37,7 +37,8 @@ module Castle
       end
 
       def join_body(response)
-        response.to_a.map(&:to_s).join
+        body = response.respond_to?(:body) ? response.body : response
+        body.to_a.map(&:to_s).join
       end
 
       def close_old_response(response)
