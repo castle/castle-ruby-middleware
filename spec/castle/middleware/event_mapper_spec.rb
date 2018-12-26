@@ -28,6 +28,8 @@ describe Castle::Middleware::EventMapper do
     }
   end
 
+  let(:broken_path) { "signup/DirMHlj0'))" }
+
   describe '::build' do
     subject(:builder) { described_class.build(config) }
 
@@ -62,13 +64,38 @@ describe Castle::Middleware::EventMapper do
 
       it { is_expected.to be_nil }
     end
+
+    context 'when wrong non utf path is used' do
+      let(:conditions) { { status: '302', path: broken_path, method: 'POST', authenticate: false } }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when referer is used' do
+      let(:referer) { '/test' }
+
+      before do
+        valid_config['$login.failed']['referer'] = referer
+      end
+
+      context 'when wrong non utf referer is used' do
+        let(:conditions) { { status: '302', referer: broken_path, path: '/sign_in', method: 'POST', authenticate: false } }
+        it { is_expected.to be_nil }
+      end
+
+      context 'when correct referer is used' do
+        let(:conditions) { { status: '302', referer: referer, path: '/sign_in', method: 'POST', authenticate: false } }
+
+        it { is_expected.to be_an_instance_of(described_class::Mapping) }
+      end
+    end
   end
 
   describe '#find with regex path in config' do
     subject { described_class.build(regex_config).find(conditions).first }
 
     let(:regex_config) do
-      { '$login.failed' => { status: '400', path: /\/users\/\d+$/, method: 'POST' } }
+      { '$login.failed' => { status: '400', path: %r{/users/\d+$}, method: 'POST' } }
     end
 
     context 'and with matching conditions' do
