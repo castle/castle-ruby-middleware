@@ -50,7 +50,7 @@ describe Castle::Middleware::Sensor do
     end
 
     allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { lambda { |_r, _s| user } }
-    allow(::Castle::Middleware.instance.configuration).to receive(:api_secret) { 'secret' }
+    allow(::Castle::Middleware.instance.configuration).to receive(:api_secret).and_return('secret')
     allow(app).to receive(:call).and_return(response)
   end
 
@@ -87,7 +87,7 @@ describe Castle::Middleware::Sensor do
       let(:body) { [''] }
       let(:user) { nil }
 
-      it { is_expected.to_not inject_the_script }
+      it { is_expected.not_to inject_the_script }
     end
 
     context 'when user_id is set' do

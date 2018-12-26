@@ -75,15 +75,15 @@ module Castle
           match_prop?(mapping.redirect_url, redirect_url) &&
           match_prop?(mapping.path, path) &&
           (mapping.authenticate == auth) &&
-          (mapping.referer.nil? || referer.include?(mapping.referer))
+          match_prop?(mapping.referer, referer)
       end
 
-      def self.match_prop?(prop_value, condition)
-        return true if condition.nil? || prop_value.nil?
+      def self.match_prop?(prop_value, current)
+        return true if current.nil? || prop_value.nil?
 
-        prop_value = prop_value.to_s unless prop_value.is_a?(Regexp)
+        prop_value = /^#{prop_value}$/ unless prop_value.is_a?(Regexp)
 
-        !prop_value.match(condition).nil?
+        !prop_value.match(current).nil?
       end
     end
   end
