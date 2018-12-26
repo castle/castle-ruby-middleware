@@ -19,7 +19,6 @@ module Castle
 
       def call(env)
         app_result = app.call(env)
-
         status, headers, body = app_result
 
         return app_result unless qualify_for_adding_cjs?(status, headers)

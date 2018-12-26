@@ -28,9 +28,11 @@ module Castle
 
         # [status, headers, body]
         app_result = app.call(env)
+        status, headers = app_result
+        return app_result if app_result.nil?
 
         # Find a matching track event from the config
-        mappings = @event_mapping.find_by_rack_request(app_result[0].to_s, path, app_result[1], req, false)
+        mappings = @event_mapping.find_by_rack_request(status.to_s, path, headers, req, false)
 
         mappings.each do |mapping|
           resource ||= configuration.services.provide_user.call(req, true)
