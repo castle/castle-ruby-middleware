@@ -9,7 +9,7 @@ Coveralls.wear!
 require 'castle/middleware'
 
 RSpec.configure do |config|
-  config.before(:each) do
+  config.before do
     ::Castle::Middleware.configure do |c|
       c.api_secret = 'secret'
       c.app_id = '1234'

@@ -66,7 +66,9 @@ describe Castle::Middleware::EventMapper do
     end
 
     context 'when wrong non utf path is used' do
-      let(:conditions) { { status: '302', path: broken_path, method: 'POST', authenticate: false } }
+      let(:conditions) do
+        { status: '302', path: broken_path, method: 'POST', authenticate: false }
+      end
 
       it { is_expected.to be_nil }
     end
@@ -74,17 +76,23 @@ describe Castle::Middleware::EventMapper do
     context 'when referer is used' do
       let(:referer) { '/test' }
 
-      before do
-        valid_config['$login.failed']['referer'] = referer
-      end
+      before { valid_config['$login.failed']['referer'] = referer }
 
       context 'when wrong non utf referer is used' do
-        let(:conditions) { { status: '302', referer: broken_path, path: '/sign_in', method: 'POST', authenticate: false } }
+        let(:conditions) do
+          {
+            status: '302', referer: broken_path,
+            path: '/sign_in', method: 'POST', authenticate: false
+          }
+        end
+
         it { is_expected.to be_nil }
       end
 
       context 'when correct referer is used' do
-        let(:conditions) { { status: '302', referer: referer, path: '/sign_in', method: 'POST', authenticate: false } }
+        let(:conditions) do
+          { status: '302', referer: referer, path: '/sign_in', method: 'POST', authenticate: false }
+        end
 
         it { is_expected.to be_an_instance_of(described_class::Mapping) }
       end
@@ -99,13 +107,17 @@ describe Castle::Middleware::EventMapper do
     end
 
     context 'and with matching conditions' do
-      let(:conditions) { { status: '400', path: '/users/1234', method: 'POST', authenticate: false } }
+      let(:conditions) do
+        { status: '400', path: '/users/1234', method: 'POST', authenticate: false }
+      end
 
       it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
 
     context 'and without matching conditions' do
-      let(:conditions) { { status: '400', path: '/users/1234/account', method: 'POST', authenticate: false } }
+      let(:conditions) do
+        { status: '400', path: '/users/1234/account', method: 'POST', authenticate: false }
+      end
 
       it { is_expected.to be_nil }
     end
@@ -119,6 +131,7 @@ describe Castle::Middleware::EventMapper do
 
       it { is_expected.to be_an_instance_of(described_class::Mapping) }
     end
+
     context 'when matching second item' do
       let(:conditions) { { status: '400', path: '/login', method: 'POST', authenticate: false } }
 
