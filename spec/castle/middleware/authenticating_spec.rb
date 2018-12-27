@@ -52,6 +52,13 @@ describe Castle::Middleware::Authenticating do
       allow(::Castle::Middleware::PropertiesProvide).to receive(:call).and_return(properties_provide)
     end
 
+    context 'when response is nil' do
+      let(:response) { nil }
+      let(:mapping) { spy }
+
+      it { expect(call).to be(nil) }
+    end
+
     context 'when a mapping exists' do
       let(:mapping) { spy }
 

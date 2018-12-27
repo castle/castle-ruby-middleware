@@ -75,6 +75,12 @@ describe Castle::Middleware::Sensor do
   describe '#call' do
     subject { described_class.new(app).call(env) }
 
+    context 'when response is nil' do
+      let(:response) { nil }
+
+      it { is_expected.to be(nil) }
+    end
+
     context 'with HTML body' do
       let(:status) { 200 }
       let(:user) { nil }

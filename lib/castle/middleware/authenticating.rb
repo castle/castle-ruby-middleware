@@ -26,9 +26,11 @@ module Castle
 
         # [status, headers, body]
         app_result = app.call(env)
+        status, headers = app_result
+        return app_result if app_result.nil?
 
         # Find a matching event from the config
-        mapping = @event_mapping.find_by_rack_request(app_result[0].to_s, path, app_result[1], req, true).first
+        mapping = @event_mapping.find_by_rack_request(status.to_s, path, headers, req, true).first
 
         return app_result if mapping.nil?
 
