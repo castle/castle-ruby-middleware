@@ -11,7 +11,8 @@ module Castle
       attr_reader :options
       def_delegators :@options,
                      :logger, :transport, :api_secret, :app_id,
-                     :tracker_url, :services,
+                     :tracker_url, :autoforward_client_id, :cookie_domain,
+                     :services,
                      :events, :identify, :user_traits, :security_headers
       def_delegators :@middleware, :log, :track
 

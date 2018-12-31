@@ -9,6 +9,8 @@ module Castle
           api_secret
           app_id
           tracker_url
+          autoforward_client_id
+          cookie_domain
           security_headers
           file_path
           logger
