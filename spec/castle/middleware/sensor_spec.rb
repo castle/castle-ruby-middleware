@@ -51,6 +51,9 @@ describe Castle::Middleware::Sensor do
 
     allow(::Castle::Middleware.instance.configuration.services).to receive(:provide_user) { lambda { |_r, _s| user } }
     allow(::Castle::Middleware.instance.configuration).to receive(:api_secret).and_return('secret')
+    allow(::Castle::Middleware.instance.configuration).to receive(:tracker_url).and_return('http://api.local')
+    allow(::Castle::Middleware.instance.configuration).to receive(:cookie_domain).and_return('dev.local')
+    allow(::Castle::Middleware.instance.configuration).to receive(:autoforward_client_id).and_return(true)
     allow(app).to receive(:call).and_return(response)
   end
 
@@ -69,6 +72,24 @@ describe Castle::Middleware::Sensor do
   matcher :inject_the_secure_tag do
     match_unless_raises do |subscriber|
       expect(subscriber[2]).to include "_castle('secure',"
+    end
+  end
+
+  matcher :inject_the_tracker_url_tag do
+    match_unless_raises do |subscriber|
+      expect(subscriber[2]).to include "_castle('setTrackerUrl','http://api.local');"
+    end
+  end
+
+  matcher :inject_the_cookie_domain_tag do
+    match_unless_raises do |subscriber|
+      expect(subscriber[2]).to include "_castle('setCookieDomain','dev.local');"
+    end
+  end
+
+  matcher :inject_the_autoforward_client_id_tag do
+    match_unless_raises do |subscriber|
+      expect(subscriber[2]).to include "_castle('autoForwardClientId',true);"
     end
   end
 
@@ -105,6 +126,9 @@ describe Castle::Middleware::Sensor do
 
       it { is_expected.to inject_the_identify_tag }
       it { is_expected.to inject_the_secure_tag }
+      it { is_expected.to inject_the_tracker_url_tag }
+      it { is_expected.to inject_the_cookie_domain_tag }
+      it { is_expected.to inject_the_autoforward_client_id_tag }
     end
   end
 end

@@ -58,6 +58,8 @@ module Castle
         resource = configuration.services.provide_user.call(req, false)
         [
           "\n",
+          autoforward_client_id_command,
+          cookie_domain_command,
           tracker_url_command,
           identify_command(resource),
           secure_command(resource),
@@ -77,13 +79,25 @@ module Castle
       def tracker_url_command
         return unless configuration.tracker_url
 
-        "_castle('setTrackerUrl', '#{configuration.tracker_url}');"
+        "_castle('setTrackerUrl','#{configuration.tracker_url}');"
+      end
+
+      def autoforward_client_id_command
+        return unless configuration.autoforward_client_id
+
+        "_castle('autoForwardClientId',#{!!configuration.autoforward_client_id});"
+      end
+
+      def cookie_domain_command
+        return unless configuration.cookie_domain
+
+        "_castle('setCookieDomain','#{configuration.cookie_domain}');"
       end
 
       def identify_command(resource)
         return unless resource
 
-        "_castle('identify', '#{Identification.id(resource, configuration.identify)}');"
+        "_castle('identify','#{Identification.id(resource, configuration.identify)}');"
       end
 
       def secure_command(resource)
