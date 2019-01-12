@@ -5,6 +5,8 @@ describe Castle::Middleware do
     subject(:config) { described_class.instance.configuration }
 
     it { expect(config.api_secret).to be_eql('secret') }
+
+    it { expect(Castle.config.port).to be_eql(3000) }
   end
 
   describe '::configure' do

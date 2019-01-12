@@ -9,8 +9,6 @@ module Castle
       extend Forwardable
       def_delegators :@middleware, :log, :configuration
 
-      CJS_PATH = 'https://d2t77mnxyo7adj.cloudfront.net/v1/c.js'.freeze
-
       def initialize
         @middleware = Middleware.instance
       end
@@ -48,7 +46,7 @@ module Castle
       def js_content_to_add(req)
         [
           "\n",
-          script_tag('', type: 'text/javascript', src: "#{CJS_PATH}?#{configuration.app_id}"),
+          script_tag('', type: 'text/javascript', src: "#{configuration.cjs_path}?#{configuration.app_id}"),
           script_tag(js_commands(req).join, js_options(req)),
           "\n"
         ].join

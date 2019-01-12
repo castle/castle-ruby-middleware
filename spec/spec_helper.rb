@@ -12,6 +12,7 @@ RSpec.configure do |config|
   config.before do
     ::Castle::Middleware.configure do |c|
       c.api_secret = 'secret'
+      c.api_options = { port: 3000 }
       c.app_id = '1234'
       c.file_path = './spec/castle/middleware/castle_config.yml'
     end
