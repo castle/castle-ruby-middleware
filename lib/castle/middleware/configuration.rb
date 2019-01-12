@@ -12,7 +12,7 @@ module Castle
       def_delegators :@options,
                      :logger, :transport, :api_secret, :app_id,
                      :tracker_url, :autoforward_client_id, :cookie_domain,
-                     :services,
+                     :services, :api_options,
                      :events, :identify, :user_traits, :security_headers
       def_delegators :@middleware, :log, :track
 
@@ -28,7 +28,12 @@ module Castle
           track(context, options)
         end
         # Forward setting to Castle SDK
-        Castle.api_secret = api_secret
+        Castle.configure do |config|
+          api_options.each do |key, value|
+            config.public_send("#{key}=", value)
+          end
+          config.api_secret = api_secret
+        end
         load_config_file if options.file_path
       end
 
@@ -36,6 +41,7 @@ module Castle
         file_config = YAML.load_file(options.file_path)
         options.events = (options.events || {}).merge(file_config['events'] || {})
         options.identify = (options.identify || {}).merge(file_config['identify'] || {})
+        options.api_options = (options.api_options || {}).merge(file_config['api_options'] || {})
         options.user_traits = (options.user_traits || {}).merge(file_config['user_traits'] || {})
       rescue Errno::ENOENT => e
         log(:error, '[Castle] No config file found')

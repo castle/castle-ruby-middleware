@@ -7,6 +7,7 @@ module Castle
       class Options
         %i[
           api_secret
+          api_options
           app_id
           tracker_url
           autoforward_client_id
@@ -26,6 +27,7 @@ module Castle
         def initialize
           @events = {}
           @security_headers = false
+          @api_options = {}
           @identify = {}
           @user_traits = {}
           @services = ::Castle::Middleware::Configuration::Services.new
