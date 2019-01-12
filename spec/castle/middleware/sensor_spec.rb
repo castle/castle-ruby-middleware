@@ -59,7 +59,7 @@ describe Castle::Middleware::Sensor do
 
   matcher :inject_the_script do
     match_unless_raises do |subscriber|
-      expect(subscriber[2]).to include ::Castle::Middleware::BodyModify::CJS_PATH
+      expect(subscriber[2]).to include ::Castle::Middleware::Configuration::Options::CJS_PATH
     end
   end
 
