@@ -11,23 +11,6 @@ describe Castle::Middleware::EventMapper do
     }
   end
 
-  let(:array_config) do
-    {
-      '$login.failed' => [
-        {
-          'method' => 'POST',
-          'path' => '/sign_in',
-          'status' => '302'
-        },
-        {
-          'method' => 'POST',
-          'path' => '/login',
-          'status' => '400'
-        }
-      ]
-    }
-  end
-
   let(:broken_path) { "signup/DirMHlj0'))" }
 
   describe '::build' do
@@ -71,6 +54,23 @@ describe Castle::Middleware::EventMapper do
       end
 
       it { is_expected.to be_nil }
+    end
+
+    context 'when query params included' do
+      let(:query_param) { 'token=123' }
+
+      before { valid_config['$login.failed']['query'] = /token=/ }
+
+      context 'when query is used' do
+        let(:conditions) do
+          {
+            query: 'z1=3&token=123&z=2', status: '302',
+            path: '/sign_in', method: 'POST', authenticate: false
+          }
+        end
+
+        it { is_expected.to be_an_instance_of(described_class::Mapping) }
+      end
     end
 
     context 'when referer is used' do
@@ -124,7 +124,24 @@ describe Castle::Middleware::EventMapper do
   end
 
   describe '#find with array config' do
-    subject { described_class.build(array_config).find(conditions).first }
+    let(:valid_config) do
+      {
+        '$login.failed' => [
+          {
+            'method' => 'POST',
+            'path' => '/sign_in',
+            'status' => '302'
+          },
+          {
+            'method' => 'POST',
+            'path' => '/login',
+            'status' => '400'
+          }
+        ]
+      }
+    end
+
+    subject { described_class.build(valid_config).find(conditions).first }
 
     context 'when matching first item' do
       let(:conditions) { { status: '302', path: '/sign_in', method: 'POST', authenticate: false } }

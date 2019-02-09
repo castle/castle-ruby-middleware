@@ -4,7 +4,7 @@ module Castle
   class Middleware
     # Map a request path to a Castle event name
     class EventMapper
-      Mapping = Struct.new(:event, :method, :path, :redirect_url,
+      Mapping = Struct.new(:event, :method, :path, :redirect_url, :query,
                            :status, :properties, :user_traits_from_params, :authenticate,
                            :challenge, :referer, :quitting)
 
@@ -23,6 +23,7 @@ module Castle
           conditions[:method],
           conditions[:path],
           conditions[:redirect_url],
+          conditions[:query],
           conditions[:status],
           conditions.fetch(:properties, {}),
           conditions.fetch(:user_traits_from_params, {}),
@@ -47,6 +48,7 @@ module Castle
           method: request.request_method,
           path: path,
           authenticate: authenticate,
+          query: request.query_string,
           referer: request.referer.to_s,
           redirect_url: headers ? headers['Location'] : nil
         )
@@ -64,8 +66,8 @@ module Castle
       end
 
       def self.match?(mapping, conditions)
-        status, mtd, path, auth, referer, redirect_url = conditions.values_at(
-          :status, :method, :path, :authenticate, :referer, :redirect_url
+        status, mtd, path, auth, referer, redirect_url, query = conditions.values_at(
+          :status, :method, :path, :authenticate, :referer, :redirect_url, :query
         )
 
         return false if path.nil?
@@ -74,6 +76,7 @@ module Castle
           match_prop?(mapping.method, mtd) &&
           match_prop?(mapping.redirect_url, redirect_url) &&
           match_prop?(mapping.path, path) &&
+          match_prop?(mapping.query, query) &&
           (mapping.authenticate == auth) &&
           match_prop?(mapping.referer, referer)
       end
