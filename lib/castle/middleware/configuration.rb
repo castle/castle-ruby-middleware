@@ -43,7 +43,7 @@ module Castle
         options.identify = (options.identify || {}).merge(file_config['identify'] || {})
         options.api_options = (options.api_options || {}).merge(file_config['api_options'] || {})
         options.user_traits = (options.user_traits || {}).merge(file_config['user_traits'] || {})
-      rescue Errno::ENOENT => e
+      rescue Errno::ENOENT
         log(:error, '[Castle] No config file found')
       rescue Psych::SyntaxError
         Caste::Middleware::ConfigError.new('[Castle] Invalid YAML in config file')
