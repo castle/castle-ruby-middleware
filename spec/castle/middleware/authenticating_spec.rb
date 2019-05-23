@@ -65,7 +65,7 @@ describe Castle::Middleware::Authenticating do
       before do
         allow(mapping).to receive(:properties).and_return({})
         allow(mapping).to receive(:event).and_return('$login.succeeded')
-        allow(user).to receive(:created_at).and_return(Time.now.utc)
+        allow(user).to receive(:created_at).and_return(::Time.now.utc)
         call
       end
 

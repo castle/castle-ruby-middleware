@@ -20,7 +20,7 @@ module Castle
           end
 
           result.tap do |r|
-            r[:registered_at] = Time.parse(
+            r[:registered_at] = ::Time.parse(
               resource.public_send(config.fetch('registered_at')).to_s
             ).utc.iso8601(0)
           end
