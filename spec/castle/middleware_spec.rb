@@ -6,7 +6,7 @@ describe Castle::Middleware do
 
     it { expect(config.api_secret).to be_eql('secret') }
 
-    it { expect(Castle.config.port).to be_eql(3000) }
+    it { expect(Castle.config.url.to_s).to be_eql('https://api.castle.local:3000') }
   end
 
   describe '::configure' do
