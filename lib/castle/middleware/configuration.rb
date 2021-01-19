@@ -25,8 +25,8 @@ module Castle
 
       # Reset to default options
       def reload
-        services.transport ||= lambda do |context, options|
-          track(context, options)
+        services.transport ||= lambda do |payload, options|
+          track(payload, options)
         end
         # Forward setting to Castle SDK
         Castle.configure do |config|
