@@ -71,8 +71,7 @@ module Castle
               properties: properties
             },
             req
-          ),
-          {}
+          )
         )
       end
     end
