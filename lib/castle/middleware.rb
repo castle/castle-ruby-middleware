@@ -48,17 +48,17 @@ module Castle
       configuration.logger.public_send(level.to_s, message)
     end
 
-    def track(context, options = {})
-      do_request(:track, context, options)
+    def track(options)
+      do_request(:track, options)
     end
 
-    def authenticate(context, options = {})
-      do_request(:authenticate, context, options)
+    def authenticate(options)
+      do_request(:authenticate, options)
     end
 
-    def do_request(meth, context, options = {})
+    def do_request(meth, options = {})
       log(:debug, "[Castle] #{meth} #{options[:event]}")
-      ::Castle::Client.new(context).public_send(meth, options)
+      ::Castle::Client.new.public_send(meth, options)
     rescue Castle::Error => e
       log(:warn, "[Castle] Can't send #{meth} request because #{e} exception")
       call_error_handler(e)
