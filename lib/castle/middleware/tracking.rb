@@ -61,14 +61,16 @@ module Castle
       # generate track call
       def process_track(req, resource, mapping, user_traits_from_params, properties)
         configuration.services.transport.call(
-          ::Castle::Client.to_context(req),
-          ::Castle::Client.to_options(
-            user_id: Identification.id(resource, configuration.identify),
-            user_traits: Identification.traits(
-              resource, configuration.user_traits
-            ).merge(user_traits_from_params),
-            event: mapping.event,
-            properties: properties
+          ::Castle::Payload::Prepare.call(
+            {
+              user_id: Identification.id(resource, configuration.identify),
+              user_traits: Identification.traits(
+                resource, configuration.user_traits
+              ).merge(user_traits_from_params),
+              event: mapping.event,
+              properties: properties
+            },
+            req
           )
         )
       end

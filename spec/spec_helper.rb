@@ -12,7 +12,7 @@ RSpec.configure do |config|
   config.before do
     ::Castle::Middleware.configure do |c|
       c.api_secret = 'secret'
-      c.api_options = { url: 'https://api.castle.local:3000' }
+      c.api_options = { base_url: 'https://api.castle.local:3000' }
       c.app_id = '1234'
       c.file_path = './spec/castle/middleware/castle_config.yml'
     end

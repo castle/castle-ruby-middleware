@@ -71,14 +71,16 @@ module Castle
 
       def process_authenticate(req, resource, mapping, user_traits_from_params, event_properties)
         authenticate(
-          Castle::Client.to_context(req),
-          Castle::Client.to_options(
-            user_id: Identification.id(resource, configuration.identify),
-            user_traits: Identification.traits(
-              resource, configuration.user_traits
-            ).merge(user_traits_from_params),
-            event: mapping.event,
-            properties: event_properties
+          ::Castle::Payload::Prepare.call(
+            {
+              user_id: Identification.id(resource, configuration.identify),
+              user_traits: Identification.traits(
+                resource, configuration.user_traits
+              ).merge(user_traits_from_params),
+              event: mapping.event,
+              properties: event_properties
+            },
+            req
           )
         )
       end
