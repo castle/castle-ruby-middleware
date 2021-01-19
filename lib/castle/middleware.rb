@@ -48,15 +48,15 @@ module Castle
       configuration.logger.public_send(level.to_s, message)
     end
 
-    def track(context, options)
+    def track(context, options = {})
       do_request(:track, context, options)
     end
 
-    def authenticate(context, options)
+    def authenticate(context, options = {})
       do_request(:authenticate, context, options)
     end
 
-    def do_request(meth, context, options)
+    def do_request(meth, context, options = {})
       log(:debug, "[Castle] #{meth} #{options[:event]}")
       ::Castle::Client.new(context).public_send(meth, options)
     rescue Castle::Error => e
