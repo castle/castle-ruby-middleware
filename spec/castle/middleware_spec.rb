@@ -48,7 +48,7 @@ describe Castle::Middleware do
         allow(api).to receive(:track).and_raise(::Castle::Error)
         allow(described_class.instance).to receive(:call_error_handler)
 
-        described_class.instance.track({}, {})
+        described_class.instance.track({})
       end
 
       it { expect(described_class.instance).to have_received(:call_error_handler).once }
@@ -57,7 +57,7 @@ describe Castle::Middleware do
     context 'when request does not raise an exception' do
       before do
         allow(described_class.instance).to receive(:call_error_handler)
-        described_class.instance.track({}, {})
+        described_class.instance.track({})
       end
 
       it { expect(described_class.instance).not_to have_received(:call_error_handler) }
